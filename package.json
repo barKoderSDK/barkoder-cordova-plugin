@@ -1,0 +1,44 @@
+{
+  "name": "barkoder-cordova",
+  "version": "1.2.8",
+  "description": "Cordova plugin that connects to barkoderSDK which helps users scan barcodes with mobile devices",
+  "cordova": {
+    "id": "barkoder-cordova-plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "nativescript": {
+    "platforms": {
+      "android": "1.0.0",
+      "ios": "1.0.0"
+    }
+  },
+  "files": [
+    "src/",
+    "www/",
+    "plugin.xml"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Barkoder",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://barkoder.com/issues"
+  },
+  "homepage": "https://barkoder.com/",
+  "keywords": [
+    "cordova",
+    "plugin",
+    "native",
+    "ios",
+    "android",
+    "barkoder",
+    "scanner",
+    "barcode",
+    "scanning-sdk"
+  ]
+}
