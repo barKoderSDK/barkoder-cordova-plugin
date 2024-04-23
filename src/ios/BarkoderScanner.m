@@ -50,6 +50,8 @@
 - (void)setUpcEanDeblurEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setMisshaped1DEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setEnableVINRestrictions:(CDVInvokedUrlCommand*)command;
+- (void)setDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)configureBarkoder:(CDVInvokedUrlCommand*)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -86,6 +88,7 @@
 - (void)isBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getThresholdBetweenDuplicatesScans:(CDVInvokedUrlCommand*)command;
 - (void)isVINRestrictionsEnabled:(CDVInvokedUrlCommand*)command;
+- (void)getBarkoderResolution:(CDVInvokedUrlCommand*)command;
 
 
 // Enum to represent different Barkoder error types
@@ -678,6 +681,74 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    
+    barkoderView.config.decoderConfig.datamatrix.dpmMode = enabled ? 1 : 0;
+    
+    [self callbackSuccess:command];
+}
+
+- (void)configureBarkoder:(CDVInvokedUrlCommand *)command {
+    NSMutableDictionary *barkoderConfigAsDictionary = [command.arguments objectAtIndex:0];
+    BarkoderConfig *barkoderConfig = barkoderView.config;
+    
+    NSData *barkoderJsonData;
+    
+    // Changing values for colors from hexes to decimal values
+    // Converting from Dictionary -> Data with utf8 encoding
+    @try {
+        NSString *colorHexCodeRoiLineColor = barkoderConfigAsDictionary[@"roiLineColor"];
+        if (colorHexCodeRoiLineColor) {
+            barkoderConfigAsDictionary[@"roiLineColor"] = [self parseColor:colorHexCodeRoiLineColor];
+        }
+        
+        NSString *colorHexCodeLocationLineColor = barkoderConfigAsDictionary[@"locationLineColor"];
+        if (colorHexCodeLocationLineColor) {
+            barkoderConfigAsDictionary[@"locationLineColor"] = [self parseColor:colorHexCodeLocationLineColor];
+        }
+        
+        NSString *colorHexCodeRoiOverlayBackgroundColor = barkoderConfigAsDictionary[@"roiOverlayBackgroundColor"];
+        if (colorHexCodeRoiOverlayBackgroundColor) {
+            barkoderConfigAsDictionary[@"roiOverlayBackgroundColor"] = [self parseColor:colorHexCodeRoiOverlayBackgroundColor];
+        }
+        
+        NSError *error = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:barkoderConfigAsDictionary options:NSJSONWritingPrettyPrinted error:&error];
+        
+        NSString *convertedBarkoderConfigAsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        
+        NSArray *keys = @[@"aztec", @"aztecCompact", @"qr", @"qrMicro", @"code128", @"code93", @"code39", @"codabar", @"code11", @"msi", @"upcA", @"upcE", @"upcE1", @"ean13", @"ean8", @"pdf417", @"pdf417Micro", @"datamatrix", @"code25", @"interleaved25", @"itf14", @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode", @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"];
+        NSArray *values = @[@"Aztec", @"Aztec Compact", @"QR", @"QR Micro", @"Code 128", @"Code 93", @"Code 39", @"Codabar", @"Code 11", @"MSI", @"Upc-A", @"Upc-E", @"Upc-E1", @"Ean-13", @"Ean-8", @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14", @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode", @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"];
+        
+        NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
+        for (int i = 0; i < keys.count; i++) {
+            [dictionary setObject:values[i] forKey:keys[i]];
+        }
+        
+        for (id key in dictionary) {
+            convertedBarkoderConfigAsString = [convertedBarkoderConfigAsString stringByReplacingOccurrencesOfString:key withString:dictionary[key] options:NSLiteralSearch range:NSMakeRange(0, [convertedBarkoderConfigAsString length])];
+        }
+        
+        barkoderJsonData = [convertedBarkoderConfigAsString dataUsingEncoding:NSUTF8StringEncoding];
+        
+    } @catch (NSException *exception) {
+        [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARKODER_CONFIG_IS_NOT_VALID]];
+        return;
+    }
+    
+    [BarkoderHelper applyConfigSettingsFromJson:barkoderConfig jsonData:barkoderJsonData finished:^(BarkoderConfig * _Nullable config, NSError * _Nullable error) {
+        if (error) {
+            [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARKODER_CONFIG_IS_NOT_VALID]];
+        }  else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                barkoderView.config = config;
+            });
+            [self callbackSuccess:command];
+        }
+    }];
+    
+}
 
 // MARK: - Getters
 
@@ -959,6 +1030,10 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccessBoolean:command boolean:[barkoderView.config.decoderConfig enableVINRestrictions]];
 }
 
+- (void)getBarkoderResolution:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config barkoderResolution]];
+}
+
 
 //MARK: BarkoderUtil
 
@@ -1006,6 +1081,11 @@ CDVPluginResult* pluginResult = nil;
     }
     
     return resultJson;
+}
+
+- (nullable NSNumber *)parseColor:(NSString *)hexColor {
+    NSString *cleanedHexColor = [hexColor stringByReplacingOccurrencesOfString:@"#" withString:@""];
+    return [NSNumber numberWithInteger:strtol([cleanedHexColor UTF8String], NULL, 16)];
 }
 
 - (UIColor *)colorWithHexString:(NSString *)hexString command:(CDVInvokedUrlCommand*)command {

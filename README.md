@@ -92,13 +92,13 @@ cordova plugin add “/your-path/barkoder-cordova”
 In your ts file:
 ```bash
 declare var Barkoder: any;
-declare var BarkoderConstants: any;
+import { BarcodeType } from 'plugins/barkoder-cordova-plugin/www/BarkoderConfig';
 
 @ViewChild('barkoderView') barkoderViewRef!: ElementRef;
 
    setActiveBarcodeTypes() {
-    Barkoder.setBarcodeTypeEnabled(BarkoderConstants.BarcodeType.CODE128, true);
-    Barkoder.setBarcodeTypeEnabled(BarkoderConstants.BarcodeType.EAN13, true);
+    Barkoder.setBarcodeTypeEnabled(BarcodeType.code128, true);
+    Barkoder.setBarcodeTypeEnabled(BarcodeType.ean13, true);
    }
 
    setBarkoderSettings() {

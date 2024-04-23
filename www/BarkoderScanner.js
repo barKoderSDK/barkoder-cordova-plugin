@@ -176,6 +176,14 @@ exports.setEnableVINRestrictions = function (enableVINRestrictions, success, err
     exec(success, error, barkoderScanner, 'setEnableVINRestrictions', [enableVINRestrictions]);
 };
 
+exports.setDataMatrixDpmModeEnabled = function (enabled, success, error) {
+    exec(success, error, barkoderScanner, 'setDataMatrixDpmModeEnabled', [enabled]);
+};
+
+exports.configureBarkoder = function (barkoderConfig, success, error) {
+    exec(success, error, barkoderScanner, 'configureBarkoder', [barkoderConfig]);
+};
+
   // - Getters
 
 exports.isFlashAvailable = function (success, error) {
@@ -316,4 +324,8 @@ exports.getThresholdBetweenDuplicatesScans = function (success, error) {
 
 exports.isVINRestrictionsEnabled = function (success, error) {
     exec(success, error, barkoderScanner, 'isVINRestrictionsEnabled', []);
+};
+
+exports.getBarkoderResolution = function (success, error) {
+    exec(success, error, barkoderScanner, 'getBarkoderResolution', []);
 };
