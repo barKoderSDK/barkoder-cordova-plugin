@@ -65,7 +65,8 @@ export enum BarcodeType {
   coop25,
   code32,
   telepen,
-  dotcode
+  dotcode,
+  idDocument
 }
 
 export class BarkoderConfig {
@@ -120,6 +121,7 @@ export class BarkoderConfig {
     code32?: BarcodeConfig;
     telepen?: BarcodeConfig;
     dotcode?: BarcodeConfig;
+    idDocument?: BarcodeConfig;
     general?: GeneralSettings;
   
     constructor(config: Partial<DekoderConfig>) {

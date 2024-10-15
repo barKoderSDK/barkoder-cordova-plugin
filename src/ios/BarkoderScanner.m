@@ -601,6 +601,8 @@ CDVPluginResult* pluginResult = nil;
             break;
         case Dotcode:
             decoderConfig.dotcode.enabled = enabled;
+        case IDDocument:
+            decoderConfig.idDocument.enabled = enabled;
             break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
@@ -718,8 +720,8 @@ CDVPluginResult* pluginResult = nil;
         
         NSString *convertedBarkoderConfigAsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         
-        NSArray *keys = @[@"aztec", @"aztecCompact", @"qr", @"qrMicro", @"code128", @"code93", @"code39", @"codabar", @"code11", @"msi", @"upcA", @"upcE", @"upcE1", @"ean13", @"ean8", @"pdf417", @"pdf417Micro", @"datamatrix", @"code25", @"interleaved25", @"itf14", @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode", @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"];
-        NSArray *values = @[@"Aztec", @"Aztec Compact", @"QR", @"QR Micro", @"Code 128", @"Code 93", @"Code 39", @"Codabar", @"Code 11", @"MSI", @"Upc-A", @"Upc-E", @"Upc-E1", @"Ean-13", @"Ean-8", @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14", @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode", @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"];
+        NSArray *keys = @[@"aztec", @"aztecCompact", @"qr", @"qrMicro", @"code128", @"code93", @"code39", @"codabar", @"code11", @"msi", @"upcA", @"upcE", @"upcE1", @"ean13", @"ean8", @"pdf417", @"pdf417Micro", @"datamatrix", @"code25", @"interleaved25", @"itf14", @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode", @"idDocument", @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"];
+        NSArray *values = @[@"Aztec", @"Aztec Compact", @"QR", @"QR Micro", @"Code 128", @"Code 93", @"Code 39", @"Codabar", @"Code 11", @"MSI", @"Upc-A", @"Upc-E", @"Upc-E1", @"Ean-13", @"Ean-8", @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14", @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode", @"ID Document", @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"];
         
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
         for (int i = 0; i < keys.count; i++) {
@@ -997,6 +999,9 @@ CDVPluginResult* pluginResult = nil;
         case Dotcode:
             [self callbackSuccessBoolean:command boolean:decoderConfig.dotcode.enabled];
             break;
+        case IDDocument:
+            [self callbackSuccessBoolean:command boolean:decoderConfig.idDocument.enabled];
+            break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
     }
@@ -1078,6 +1083,25 @@ CDVPluginResult* pluginResult = nil;
         if (thumbnailData) {
             resultJson[@"resultThumbnailAsBase64"] = [thumbnailData base64EncodedStringWithOptions:0];
         }
+    }
+    
+    if (decoderResult.images) {
+      for (BKImageDescriptor *imageObject in decoderResult.images) {
+        NSData *imageData = UIImagePNGRepresentation(imageObject.image);
+        if (!imageData) continue;
+        
+        NSString *base64ImageString = [imageData base64EncodedStringWithOptions:0];
+        
+        if ([imageObject.name isEqualToString:@"main"]) {
+          resultJson[@"mainImageAsBase64"] = base64ImageString;
+        } else if ([imageObject.name isEqualToString:@"document"]) {
+          resultJson[@"documentImageAsBase64"] = base64ImageString;
+        } else if ([imageObject.name isEqualToString:@"signature"]) {
+          resultJson[@"signatureImageAsBase64"] = base64ImageString;
+        } else if ([imageObject.name isEqualToString:@"picture"]) {
+          resultJson[@"pictureImageAsBase64"] = base64ImageString;
+        }
+      }
     }
     
     return resultJson;
