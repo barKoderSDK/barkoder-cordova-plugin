@@ -1,6 +1,6 @@
 {
   "name": "barkoder-cordova",
-  "version": "1.5.2",
+  "version": "1.5.6",
   "description": "Cordova plugin that connects to barkoderSDK which helps users scan barcodes with mobile devices",
   "cordova": {
     "id": "barkoder-cordova-plugin",
@@ -18,7 +18,8 @@
   "files": [
     "src/",
     "www/",
-    "plugin.xml"
+    "plugin.xml",
+    "LICENSE"
   ],
   "main": "index.js",
   "scripts": {

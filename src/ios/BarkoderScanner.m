@@ -16,6 +16,7 @@
 - (void)startScanning:(CDVInvokedUrlCommand*)command;
 - (void)stopScanning:(CDVInvokedUrlCommand*)command;
 - (void)pauseScanning:(CDVInvokedUrlCommand*)command;
+- (void)scanImage:(CDVInvokedUrlCommand*)command;
 - (void)setLocationLineColor:(CDVInvokedUrlCommand*)command;
 - (void)setLocationLineWidth:(CDVInvokedUrlCommand*)command;
 - (void)setRoiLineColor:(CDVInvokedUrlCommand*)command;
@@ -51,7 +52,10 @@
 - (void)setMisshaped1DEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setEnableVINRestrictions:(CDVInvokedUrlCommand*)command;
 - (void)setDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)setQrDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)setQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)configureBarkoder:(CDVInvokedUrlCommand*)command;
+- (void)setIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand*)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -89,6 +93,11 @@
 - (void)getThresholdBetweenDuplicatesScans:(CDVInvokedUrlCommand*)command;
 - (void)isVINRestrictionsEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getBarkoderResolution:(CDVInvokedUrlCommand*)command;
+- (void)isDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)isQrDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)isQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)isIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand*)command;
+
 
 
 // Enum to represent different Barkoder error types
@@ -243,6 +252,36 @@ CDVPluginResult* pluginResult = nil;
     [barkoderView pauseScanning];
     
     [self callbackSuccess:command];
+}
+
+- (void)scanImage:(CDVInvokedUrlCommand*)command {
+  //    dispatch_async(dispatch_get_main_queue(), ^{
+  
+  resultCallbackId = command.callbackId;
+  
+  NSString* base64Image = [command.arguments objectAtIndex:0];
+  
+  if (!base64Image || ![base64Image isKindOfClass:[NSString class]]) {
+    return;
+  }
+  
+  NSData *imageData = [[NSData alloc] initWithBase64EncodedString:base64Image options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  if (!imageData) {
+    return;
+  }
+  
+  UIImage *image = [UIImage imageWithData:imageData];
+  if (!image) {
+    return;
+  }
+  
+  if (!barkoderView.config) {
+    return;
+  }
+  
+  [BarkoderHelper scanImage:image bkdConfig:barkoderView.config resultDelegate:self];
+  
+  //    });
 }
 
 - (void)setLocationLineColor:(CDVInvokedUrlCommand *)command {
@@ -442,7 +481,7 @@ CDVPluginResult* pluginResult = nil;
     
     DecodingSpeed decodingSpeed = (DecodingSpeed) index;
     
-    if (decodingSpeed == Fast || decodingSpeed == Normal || decodingSpeed == Slow) { // Fast = 0, Normal = 1, Slow = 2
+  if (decodingSpeed == Fast || decodingSpeed == Normal || decodingSpeed == Slow || decodingSpeed == Rigorous) { // Fast = 0, Normal = 1, Slow = 2, Rigorous = 3
         barkoderView.config.decoderConfig.decodingSpeed = decodingSpeed;
         
         [self callbackSuccess:command];
@@ -691,6 +730,22 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setQrDpmModeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    
+    barkoderView.config.decoderConfig.qr.dpmMode = enabled ? 1 : 0;
+    
+    [self callbackSuccess:command];
+}
+
+- (void)setQrMicroDpmModeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    
+    barkoderView.config.decoderConfig.qrMicro.dpmMode = enabled ? 1 : 0;
+    
+    [self callbackSuccess:command];
+}
+
 - (void)configureBarkoder:(CDVInvokedUrlCommand *)command {
     NSMutableDictionary *barkoderConfigAsDictionary = [command.arguments objectAtIndex:0];
     BarkoderConfig *barkoderConfig = barkoderView.config;
@@ -750,6 +805,20 @@ CDVPluginResult* pluginResult = nil;
         }
     }];
     
+}
+
+- (void)setIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand *)command {
+  BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+  
+  StandardChecksum masterChecksum = (StandardChecksum) enabled;
+  
+  if (masterChecksum == Checksum_Enabled || masterChecksum == Checksum_Disabled) {
+    
+    barkoderView.config.decoderConfig.idDocument.masterChecksum = masterChecksum;
+    
+    [self callbackSuccess:command];
+  }
+  
 }
 
 // MARK: - Getters
@@ -1039,72 +1108,105 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccessInt:command value:(int)[barkoderView.config barkoderResolution]];
 }
 
+- (void)isDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL isEnabled = (barkoderView.config.decoderConfig.datamatrix.dpmMode != 0);
+    [self callbackSuccessBoolean:command boolean:isEnabled];
+}
+
+- (void)isQrDpmModeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL isEnabled = (barkoderView.config.decoderConfig.qr.dpmMode != 0);
+    [self callbackSuccessBoolean:command boolean:isEnabled];
+}
+
+- (void)isQrMicroDpmModeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL isEnabled = (barkoderView.config.decoderConfig.qrMicro.dpmMode != 0);
+    [self callbackSuccessBoolean:command boolean:isEnabled];
+}
+
+- (void)isIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL isEnabled = (barkoderView.config.decoderConfig.idDocument.masterChecksum == 1);
+    [self callbackSuccessBoolean:command boolean:isEnabled];
+}
+
 
 //MARK: BarkoderUtil
 
-- (NSDictionary *)barkoderResultsToJson:(NSArray<DecoderResult *> * _Nonnull)decoderResults thumbnails:(NSArray<UIImage *> * _Nullable)thumbnails image:(UIImage * _Nullable)image {
-    DecoderResult *decoderResult = nil;
+- (NSDictionary *)barkoderResultsToJson:(NSArray<DecoderResult *> * _Nonnull)decoderResults
+                             thumbnails:(NSArray<UIImage *> * _Nullable)thumbnails
+                                  image:(UIImage * _Nullable)image {
+  NSMutableArray *resultsJsonArray = [NSMutableArray array];
+  
+  // Process each decoder result separately
+  for (DecoderResult *decoderResult in decoderResults) {
+    NSMutableDictionary *resultJson = [NSMutableDictionary dictionary];
     
-    if (decoderResults != NULL) {
-        decoderResult = decoderResults.firstObject;
-    }
-    
-    NSMutableDictionary *resultJson = [[NSMutableDictionary alloc] init];
-    NSNumber *barcodeType = [NSNumber numberWithInt:decoderResult.barcodeType];
-    
-    resultJson[@"barcodeType"] = barcodeType;
-    resultJson[@"barcodeTypeName"] = decoderResult.barcodeTypeName;
+    resultJson[@"barcodeType"] = @(decoderResult.barcodeType);
+    resultJson[@"barcodeTypeName"] = decoderResult.barcodeTypeName ?: [NSNull null];
     resultJson[@"binaryDataAsBase64"] = [decoderResult.binaryData base64EncodedStringWithOptions:0];
-    resultJson[@"textualData"] = decoderResult.textualData;
-    resultJson[@"characterSet"] = decoderResult.characterSet;
+    resultJson[@"textualData"] = decoderResult.textualData ?: [NSNull null];
+    resultJson[@"characterSet"] = decoderResult.characterSet ?: [NSNull null];
     
     if ([decoderResult.extra isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *extraAsDictionary = (NSDictionary *)decoderResult.extra;
-        if (extraAsDictionary.count > 0) {
-            NSError *error = nil;
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:extraAsDictionary options:0 error:&error];
-            if (jsonData && !error) {
-                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-                resultJson[@"extra"] = jsonString;
-            }
-        }
-    }
-    
-    if (image) {
-        NSData *imageData = UIImagePNGRepresentation(image);
-        if (imageData) {
-            resultJson[@"resultImageAsBase64"] = [imageData base64EncodedStringWithOptions:0];
-        }
-    }
-    
-    if (thumbnails.count > 0) {
-        UIImage *thumbnail = thumbnails[0];
-        NSData *thumbnailData = UIImagePNGRepresentation(thumbnail);
-        if (thumbnailData) {
-            resultJson[@"resultThumbnailAsBase64"] = [thumbnailData base64EncodedStringWithOptions:0];
-        }
-    }
-    
-    if (decoderResult.images) {
-      for (BKImageDescriptor *imageObject in decoderResult.images) {
-        NSData *imageData = UIImagePNGRepresentation(imageObject.image);
-        if (!imageData) continue;
-        
-        NSString *base64ImageString = [imageData base64EncodedStringWithOptions:0];
-        
-        if ([imageObject.name isEqualToString:@"main"]) {
-          resultJson[@"mainImageAsBase64"] = base64ImageString;
-        } else if ([imageObject.name isEqualToString:@"document"]) {
-          resultJson[@"documentImageAsBase64"] = base64ImageString;
-        } else if ([imageObject.name isEqualToString:@"signature"]) {
-          resultJson[@"signatureImageAsBase64"] = base64ImageString;
-        } else if ([imageObject.name isEqualToString:@"picture"]) {
-          resultJson[@"pictureImageAsBase64"] = base64ImageString;
+      NSDictionary *extraAsDictionary = (NSDictionary *)decoderResult.extra;
+      if (extraAsDictionary.count > 0) {
+        NSError *error = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:extraAsDictionary options:0 error:&error];
+        if (jsonData && !error) {
+          NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+          resultJson[@"extra"] = jsonString;
         }
       }
     }
     
-    return resultJson;
+    // Add MRZ images if barcodeTypeName is "MRZ"
+    if ([decoderResult.barcodeTypeName isEqualToString:@"MRZ"]) {
+      if (decoderResult.images) {
+        NSMutableArray *mrzImagesArray = [NSMutableArray array];
+        
+        for (BKImageDescriptor *imageObject in decoderResult.images) {
+          if (imageObject.name && imageObject.image) {
+            NSData *imageData = UIImagePNGRepresentation(imageObject.image);
+            if (imageData) {
+              NSDictionary *imageInfo = @{
+                @"name": imageObject.name,
+                @"base64": [imageData base64EncodedStringWithOptions:0]
+              };
+              [mrzImagesArray addObject:imageInfo];
+            }
+          }
+        }
+        resultJson[@"mrzImagesAsBase64"] = mrzImagesArray;
+      }
+    }
+    
+    [resultsJsonArray addObject:resultJson];
+  }
+  
+  // Prepare the final JSON result
+  NSMutableDictionary *barkoderResultJson = [NSMutableDictionary dictionary];
+  barkoderResultJson[@"decoderResults"] = resultsJsonArray;
+  
+  // Add thumbnails if present
+  if (thumbnails.count > 0) {
+    NSMutableArray *thumbnailsBase64Array = [NSMutableArray array];
+    for (UIImage *thumbnail in thumbnails) {
+      NSData *thumbnailData = UIImagePNGRepresentation(thumbnail);
+      if (thumbnailData) {
+        [thumbnailsBase64Array addObject:[thumbnailData base64EncodedStringWithOptions:0]];
+      }
+    }
+    barkoderResultJson[@"resultThumbnailsAsBase64"] = thumbnailsBase64Array;
+  }
+  
+  // Add main image if present
+  if (image) {
+    NSData *imageData = UIImagePNGRepresentation(image);
+    if (imageData) {
+      barkoderResultJson[@"resultImageAsBase64"] = [imageData base64EncodedStringWithOptions:0];
+    }
+  }
+  
+  return barkoderResultJson;
 }
 
 - (nullable NSNumber *)parseColor:(NSString *)hexColor {

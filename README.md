@@ -92,11 +92,31 @@ cordova plugin add “/your-path/barkoder-cordova”
 In your ts file:
 ```bash
 declare var Barkoder: any;
-import { BarcodeType } from 'plugins/barkoder-cordova-plugin/www/BarkoderConfig';
+import { BarkoderResult, BarcodeType } from 'plugins/barkoder-cordova-plugin/www/BarkoderConfig';
 
 @ViewChild('barkoderView') barkoderViewRef!: ElementRef;
 
+  constructor(private platform: Platform) {}
+
+    ngAfterViewInit() {
+    this.platform.ready().then(() => {
+      Barkoder.registerWithLicenseKey("YOUR_LICENSE_KEY");
+      setTimeout(() => {
+        const boundingRect = this.barkoderViewRef.nativeElement.getBoundingClientRect() as DOMRect;
+        Barkoder.initialize(
+          Math.round(boundingRect.width),
+          Math.round(boundingRect.height),
+          Math.round(boundingRect.x),
+          Math.round(boundingRect.y)
+        );
+        this.setBarkoderSettings();
+        this.setActiveBarcodeTypes();
+      }, 200);
+    });
+  }
+
    setActiveBarcodeTypes() {
+    Barkoder.setBarcodeTypeEnabled(BarcodeType.qr, true);
     Barkoder.setBarcodeTypeEnabled(BarcodeType.code128, true);
     Barkoder.setBarcodeTypeEnabled(BarcodeType.ean13, true);
    }
@@ -104,28 +124,19 @@ import { BarcodeType } from 'plugins/barkoder-cordova-plugin/www/BarkoderConfig'
    setBarkoderSettings() {
     Barkoder.setRegionOfInterestVisible(true);
     Barkoder.setRegionOfInterest(5, 5, 90, 90);
-    Barkoder.setCloseSessionOnResultEnabled(false);
     Barkoder.setImageResultEnabled(true);
     Barkoder.setBarcodeThumbnailOnResultEnabled(true);
-    Barkoder.setBeepOnSuccessEnabled(true);
-    Barkoder.setPinchToZoomEnabled(true);
-    Barkoder.setZoomFactor(2.0);
    }
 
-   async startScanning() {
-    const boundingRect = this.barkoderViewRef.nativeElement.getBoundingClientRect() as DOMRect;
-    Barkoder.registerWithLicenseKey("your_license_key");
-    await Barkoder.initialize(
-        Math.round(boundingRect.width), 
-        Math.round(boundingRect.height), 
-        Math.round(boundingRect.x), 
-        Math.round(boundingRect.y))
-
-    this.setBarkoderSettings();
-    this.setActiveBarcodeTypes();
-
-    Barkoder.startScanning((barkoderResult: any) => {
-      console.log("Result: " + barkoderResult.textualData);
+   startScanning() {
+    Barkoder.startScanning((data: any) => {
+      console.log("startScanning results called");
+      const barkoderResult = new BarkoderResult(data);
+      if (barkoderResult) {
+         barkoderResult.decoderResults.forEach((result, index) => {
+            console.log(`Result ${index + 1}: ${result.textualData}`);
+         });
+      }
     }, (err: any) => {
       console.log(err);
     });

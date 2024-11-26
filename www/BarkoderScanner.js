@@ -9,7 +9,7 @@ var barkoderScanner = "BarkoderScanner";
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.initialize = function(width, height, x, y, success, error) {
+exports.initialize = function (width, height, x, y, success, error) {
   exec(success, error, barkoderScanner, "initialize", [width, height, x, y]);
 };
 
@@ -21,7 +21,7 @@ exports.initialize = function(width, height, x, y, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.registerWithLicenseKey = function(licenseKey, success, error) {
+exports.registerWithLicenseKey = function (licenseKey, success, error) {
   exec(success, error, barkoderScanner, "registerWithLicenseKey", [licenseKey]);
 };
 
@@ -33,7 +33,7 @@ exports.registerWithLicenseKey = function(licenseKey, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setZoomFactor = function(zoomFactor, success, error) {
+exports.setZoomFactor = function (zoomFactor, success, error) {
   exec(success, error, barkoderScanner, "setZoomFactor", [zoomFactor]);
 };
 
@@ -43,11 +43,11 @@ exports.setZoomFactor = function(zoomFactor, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setFlashEnabled = function(enabled, success, error) {
+exports.setFlashEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setFlashEnabled", [enabled]);
 };
 
-exports.startCamera = function(success, error) {
+exports.startCamera = function (success, error) {
   exec(success, error, barkoderScanner, "startCamera", []);
 };
 
@@ -56,7 +56,7 @@ exports.startCamera = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.startScanning = function(success, error) {
+exports.startScanning = function (success, error) {
   exec(success, error, barkoderScanner, "startScanning", []);
 };
 
@@ -65,7 +65,7 @@ exports.startScanning = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.stopScanning = function(success, error) {
+exports.stopScanning = function (success, error) {
   exec(success, error, barkoderScanner, "stopScanning", []);
 };
 
@@ -74,8 +74,17 @@ exports.stopScanning = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.pauseScanning = function(success, error) {
+exports.pauseScanning = function (success, error) {
   exec(success, error, barkoderScanner, "pauseScanning", []);
+};
+
+/**
+ * Scan barcodes from base64 string image
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.scanImage = function (base64, success, error) {
+  exec(success, error, barkoderScanner, "scanImage", [base64]);
 };
 
 /**
@@ -84,7 +93,7 @@ exports.pauseScanning = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setLocationLineColor = function(hexColor, success, error) {
+exports.setLocationLineColor = function (hexColor, success, error) {
   exec(success, error, barkoderScanner, "setLocationLineColor", [hexColor]);
 };
 
@@ -94,7 +103,7 @@ exports.setLocationLineColor = function(hexColor, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setLocationLineWidth = function(lineWidth, success, error) {
+exports.setLocationLineWidth = function (lineWidth, success, error) {
   exec(success, error, barkoderScanner, "setLocationLineWidth", [lineWidth]);
 };
 
@@ -104,7 +113,7 @@ exports.setLocationLineWidth = function(lineWidth, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setRoiLineColor = function(hexColor, success, error) {
+exports.setRoiLineColor = function (hexColor, success, error) {
   exec(success, error, barkoderScanner, "setRoiLineColor", [hexColor]);
 };
 
@@ -114,7 +123,7 @@ exports.setRoiLineColor = function(hexColor, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setRoiLineWidth = function(lineWidth, success, error) {
+exports.setRoiLineWidth = function (lineWidth, success, error) {
   exec(success, error, barkoderScanner, "setRoiLineWidth", [lineWidth]);
 };
 
@@ -124,7 +133,7 @@ exports.setRoiLineWidth = function(lineWidth, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setRoiOverlayBackgroundColor = function(hexColor, success, error) {
+exports.setRoiOverlayBackgroundColor = function (hexColor, success, error) {
   exec(success, error, barkoderScanner, "setRoiOverlayBackgroundColor", [
     hexColor,
   ]);
@@ -136,7 +145,7 @@ exports.setRoiOverlayBackgroundColor = function(hexColor, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setCloseSessionOnResultEnabled = function(enabled, success, error) {
+exports.setCloseSessionOnResultEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setCloseSessionOnResultEnabled", [
     enabled,
   ]);
@@ -148,7 +157,7 @@ exports.setCloseSessionOnResultEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setImageResultEnabled = function(enabled, success, error) {
+exports.setImageResultEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setImageResultEnabled", [enabled]);
 };
 
@@ -158,7 +167,7 @@ exports.setImageResultEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setLocationInImageResultEnabled = function(enabled, success, error) {
+exports.setLocationInImageResultEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setLocationInImageResultEnabled", [
     enabled,
   ]);
@@ -169,7 +178,7 @@ exports.setLocationInImageResultEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setRegionOfInterest = function(
+exports.setRegionOfInterest = function (
   left,
   top,
   width,
@@ -191,7 +200,7 @@ exports.setRegionOfInterest = function(
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setThreadsLimit = function(threadsLimit, success, error) {
+exports.setThreadsLimit = function (threadsLimit, success, error) {
   exec(success, error, barkoderScanner, "setThreadsLimit", [threadsLimit]);
 };
 
@@ -201,7 +210,7 @@ exports.setThreadsLimit = function(threadsLimit, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setLocationInPreviewEnabled = function(enabled, success, error) {
+exports.setLocationInPreviewEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setLocationInPreviewEnabled", [
     enabled,
   ]);
@@ -213,7 +222,7 @@ exports.setLocationInPreviewEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setPinchToZoomEnabled = function(enabled, success, error) {
+exports.setPinchToZoomEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setPinchToZoomEnabled", [enabled]);
 };
 
@@ -223,7 +232,7 @@ exports.setPinchToZoomEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setRegionOfInterestVisible = function(
+exports.setRegionOfInterestVisible = function (
   regionOfInterestVisible,
   success,
   error
@@ -239,7 +248,7 @@ exports.setRegionOfInterestVisible = function(
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setBarkoderResolution = function(resolution, success, error) {
+exports.setBarkoderResolution = function (resolution, success, error) {
   exec(success, error, barkoderScanner, "setBarkoderResolution", [resolution]);
 };
 
@@ -249,7 +258,7 @@ exports.setBarkoderResolution = function(resolution, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setBeepOnSuccessEnabled = function(enabled, success, error) {
+exports.setBeepOnSuccessEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setBeepOnSuccessEnabled", [enabled]);
 };
 
@@ -259,13 +268,13 @@ exports.setBeepOnSuccessEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setVibrateOnSuccessEnabled = function(enabled, success, error) {
+exports.setVibrateOnSuccessEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setVibrateOnSuccessEnabled", [
     enabled,
   ]);
 };
 
-exports.showLogMessages = function(showLogMessages, success, error) {
+exports.showLogMessages = function (showLogMessages, success, error) {
   exec(success, error, barkoderScanner, "showLogMessages", [showLogMessages]);
 };
 
@@ -275,7 +284,7 @@ exports.showLogMessages = function(showLogMessages, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setBarcodeTypeLengthRange = function(type, min, max, success, error) {
+exports.setBarcodeTypeLengthRange = function (type, min, max, success, error) {
   exec(success, error, barkoderScanner, "setBarcodeTypeLengthRange", [
     type,
     min,
@@ -289,7 +298,7 @@ exports.setBarcodeTypeLengthRange = function(type, min, max, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setEncodingCharacterSet = function(characterSet, success, error) {
+exports.setEncodingCharacterSet = function (characterSet, success, error) {
   exec(success, error, barkoderScanner, "setEncodingCharacterSet", [
     characterSet,
   ]);
@@ -301,7 +310,7 @@ exports.setEncodingCharacterSet = function(characterSet, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setDecodingSpeed = function(decodingSpeed, success, error) {
+exports.setDecodingSpeed = function (decodingSpeed, success, error) {
   exec(success, error, barkoderScanner, "setDecodingSpeed", [decodingSpeed]);
 };
 
@@ -311,7 +320,7 @@ exports.setDecodingSpeed = function(decodingSpeed, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setFormattingType = function(formattingType, success, error) {
+exports.setFormattingType = function (formattingType, success, error) {
   exec(success, error, barkoderScanner, "setFormattingType", [formattingType]);
 };
 
@@ -321,7 +330,7 @@ exports.setFormattingType = function(formattingType, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setCode11ChecksumType = function(checksumType, success, error) {
+exports.setCode11ChecksumType = function (checksumType, success, error) {
   exec(success, error, barkoderScanner, "setCode11ChecksumType", [
     checksumType,
   ]);
@@ -333,7 +342,7 @@ exports.setCode11ChecksumType = function(checksumType, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setMsiChecksumType = function(checksumType, success, error) {
+exports.setMsiChecksumType = function (checksumType, success, error) {
   exec(success, error, barkoderScanner, "setMsiChecksumType", [checksumType]);
 };
 
@@ -343,7 +352,7 @@ exports.setMsiChecksumType = function(checksumType, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setCode39ChecksumType = function(checksumType, success, error) {
+exports.setCode39ChecksumType = function (checksumType, success, error) {
   exec(success, error, barkoderScanner, "setCode39ChecksumType", [
     checksumType,
   ]);
@@ -356,7 +365,7 @@ exports.setCode39ChecksumType = function(checksumType, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setBarcodeTypeEnabled = function(type, enabled, success, error) {
+exports.setBarcodeTypeEnabled = function (type, enabled, success, error) {
   exec(success, error, barkoderScanner, "setBarcodeTypeEnabled", [
     type,
     enabled,
@@ -369,7 +378,7 @@ exports.setBarcodeTypeEnabled = function(type, enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setMulticodeCachingEnabled = function(enabled, success, error) {
+exports.setMulticodeCachingEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setMulticodeCachingEnabled", [
     enabled,
   ]);
@@ -381,7 +390,7 @@ exports.setMulticodeCachingEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setMulticodeCachingDuration = function(duration, success, error) {
+exports.setMulticodeCachingDuration = function (duration, success, error) {
   exec(success, error, barkoderScanner, "setMulticodeCachingDuration", [
     duration,
   ]);
@@ -393,7 +402,7 @@ exports.setMulticodeCachingDuration = function(duration, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setMaximumResultsCount = function(resultsCount, success, error) {
+exports.setMaximumResultsCount = function (resultsCount, success, error) {
   exec(success, error, barkoderScanner, "setMaximumResultsCount", [
     resultsCount,
   ]);
@@ -405,7 +414,7 @@ exports.setMaximumResultsCount = function(resultsCount, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setBarcodeThumbnailOnResultEnabled = function(enabled, success, error) {
+exports.setBarcodeThumbnailOnResultEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setBarcodeThumbnailOnResultEnabled", [
     enabled,
   ]);
@@ -417,7 +426,7 @@ exports.setBarcodeThumbnailOnResultEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setDuplicatesDelayMs = function(delayMs, success, error) {
+exports.setDuplicatesDelayMs = function (delayMs, success, error) {
   exec(success, error, barkoderScanner, "setDuplicatesDelayMs", [delayMs]);
 };
 
@@ -427,7 +436,7 @@ exports.setDuplicatesDelayMs = function(delayMs, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setThresholdBetweenDuplicatesScans = function(
+exports.setThresholdBetweenDuplicatesScans = function (
   thresholdBetweenDuplicatesScans,
   success,
   error
@@ -443,7 +452,7 @@ exports.setThresholdBetweenDuplicatesScans = function(
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setUpcEanDeblurEnabled = function(enabled, success, error) {
+exports.setUpcEanDeblurEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setUpcEanDeblurEnabled", [enabled]);
 };
 
@@ -453,7 +462,7 @@ exports.setUpcEanDeblurEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setMisshaped1DEnabled = function(enabled, success, error) {
+exports.setMisshaped1DEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setMisshaped1DEnabled", [enabled]);
 };
 
@@ -463,7 +472,7 @@ exports.setMisshaped1DEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setEnableVINRestrictions = function(
+exports.setEnableVINRestrictions = function (
   enableVINRestrictions,
   success,
   error
@@ -479,8 +488,32 @@ exports.setEnableVINRestrictions = function(
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.setDataMatrixDpmModeEnabled = function(enabled, success, error) {
-  exec(success, error, barkoderScanner, "setDataMatrixDpmModeEnabled", [
+exports.setDatamatrixDpmModeEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setDatamatrixDpmModeEnabled", [
+    enabled,
+  ]);
+};
+
+/**
+ * Sets whether the Direct Part Marking (DPM) mode for QR barcodes is enabled.
+ * @param {*} enabled - Set to true to enable Data Matrix DPM mode, false to disable it
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setQrDpmModeEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setQrDpmModeEnabled", [
+    enabled,
+  ]);
+};
+
+/**
+ * Sets whether the Direct Part Marking (DPM) mode for QR Micro barcodes is enabled.
+ * @param {*} enabled - Set to true to enable Data Matrix DPM mode, false to disable it
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setQrMicroDpmModeEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setQrMicroDpmModeEnabled", [
     enabled,
   ]);
 };
@@ -491,8 +524,20 @@ exports.setDataMatrixDpmModeEnabled = function(enabled, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.configureBarkoder = function(barkoderConfig, success, error) {
+exports.configureBarkoder = function (barkoderConfig, success, error) {
   exec(success, error, barkoderScanner, "configureBarkoder", [barkoderConfig]);
+};
+
+/**
+ * Sets whether Master checksum should be requiered when scanning ID Documents.
+ * @param {*} enabled - Set to true to enable Master checksum, false to disable it
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setIdDocumentMasterChecksumEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setIdDocumentMasterChecksumEnabled", [
+    enabled,
+  ]);
 };
 
 // - Getters
@@ -502,11 +547,11 @@ exports.configureBarkoder = function(barkoderConfig, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isFlashAvailable = function(success, error) {
+exports.isFlashAvailable = function (success, error) {
   exec(success, error, barkoderScanner, "isFlashAvailable", []);
 };
 
-exports.isCloseSessionOnResultEnabled = function(success, error) {
+exports.isCloseSessionOnResultEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isCloseSessionOnResultEnabled", []);
 };
 
@@ -515,11 +560,11 @@ exports.isCloseSessionOnResultEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isImageResultEnabled = function(success, error) {
+exports.isImageResultEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isImageResultEnabled", []);
 };
 
-exports.isLocationInImageResultEnabled = function(success, error) {
+exports.isLocationInImageResultEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isLocationInImageResultEnabled", []);
 };
 
@@ -528,7 +573,7 @@ exports.isLocationInImageResultEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isLocationInPreviewEnabled = function(success, error) {
+exports.isLocationInPreviewEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isLocationInPreviewEnabled", []);
 };
 
@@ -537,7 +582,7 @@ exports.isLocationInPreviewEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isPinchToZoomEnabled = function(success, error) {
+exports.isPinchToZoomEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isPinchToZoomEnabled", []);
 };
 
@@ -546,7 +591,7 @@ exports.isPinchToZoomEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isRegionOfInterestVisible = function(success, error) {
+exports.isRegionOfInterestVisible = function (success, error) {
   exec(success, error, barkoderScanner, "isRegionOfInterestVisible", []);
 };
 
@@ -555,7 +600,7 @@ exports.isRegionOfInterestVisible = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isBeepOnSuccessEnabled = function(success, error) {
+exports.isBeepOnSuccessEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isBeepOnSuccessEnabled", []);
 };
 
@@ -564,7 +609,7 @@ exports.isBeepOnSuccessEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isVibrateOnSuccessEnabled = function(success, error) {
+exports.isVibrateOnSuccessEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isVibrateOnSuccessEnabled", []);
 };
 
@@ -573,7 +618,7 @@ exports.isVibrateOnSuccessEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getVersion = function(success, error) {
+exports.getVersion = function (success, error) {
   exec(success, error, barkoderScanner, "getVersion", []);
 };
 
@@ -582,7 +627,7 @@ exports.getVersion = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getLocationLineColorHex = function(success, error) {
+exports.getLocationLineColorHex = function (success, error) {
   exec(success, error, barkoderScanner, "getLocationLineColorHex", []);
 };
 
@@ -591,7 +636,7 @@ exports.getLocationLineColorHex = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getRoiLineColorHex = function(success, error) {
+exports.getRoiLineColorHex = function (success, error) {
   exec(success, error, barkoderScanner, "getRoiLineColorHex", []);
 };
 
@@ -600,7 +645,7 @@ exports.getRoiLineColorHex = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getRoiOverlayBackgroundColorHex = function(success, error) {
+exports.getRoiOverlayBackgroundColorHex = function (success, error) {
   exec(success, error, barkoderScanner, "getRoiOverlayBackgroundColorHex", []);
 };
 
@@ -609,7 +654,7 @@ exports.getRoiOverlayBackgroundColorHex = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getMaxZoomFactor = function(success, error) {
+exports.getMaxZoomFactor = function (success, error) {
   exec(success, error, barkoderScanner, "getMaxZoomFactor", []);
 };
 
@@ -618,7 +663,7 @@ exports.getMaxZoomFactor = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getLocationLineWidth = function(success, error) {
+exports.getLocationLineWidth = function (success, error) {
   exec(success, error, barkoderScanner, "getLocationLineWidth", []);
 };
 
@@ -627,7 +672,7 @@ exports.getLocationLineWidth = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getRoiLineWidth = function(success, error) {
+exports.getRoiLineWidth = function (success, error) {
   exec(success, error, barkoderScanner, "getRoiLineWidth", []);
 };
 
@@ -636,7 +681,7 @@ exports.getRoiLineWidth = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getRegionOfInterest = function(success, error) {
+exports.getRegionOfInterest = function (success, error) {
   exec(success, error, barkoderScanner, "getRegionOfInterest", []);
 };
 
@@ -646,7 +691,7 @@ exports.getRegionOfInterest = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getBarcodeTypeLengthRange = function(type, success, error) {
+exports.getBarcodeTypeLengthRange = function (type, success, error) {
   exec(success, error, barkoderScanner, "getBarcodeTypeLengthRange", [type]);
 };
 
@@ -655,7 +700,7 @@ exports.getBarcodeTypeLengthRange = function(type, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getMsiChecksumType = function(success, error) {
+exports.getMsiChecksumType = function (success, error) {
   exec(success, error, barkoderScanner, "getMsiChecksumType", []);
 };
 
@@ -664,7 +709,7 @@ exports.getMsiChecksumType = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getCode39ChecksumType = function(success, error) {
+exports.getCode39ChecksumType = function (success, error) {
   exec(success, error, barkoderScanner, "getCode39ChecksumType", []);
 };
 
@@ -673,7 +718,7 @@ exports.getCode39ChecksumType = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getCode11ChecksumType = function(success, error) {
+exports.getCode11ChecksumType = function (success, error) {
   exec(success, error, barkoderScanner, "getCode11ChecksumType", []);
 };
 
@@ -682,7 +727,7 @@ exports.getCode11ChecksumType = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getEncodingCharacterSet = function(success, error) {
+exports.getEncodingCharacterSet = function (success, error) {
   exec(success, error, barkoderScanner, "getEncodingCharacterSet", []);
 };
 
@@ -691,7 +736,7 @@ exports.getEncodingCharacterSet = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getDecodingSpeed = function(success, error) {
+exports.getDecodingSpeed = function (success, error) {
   exec(success, error, barkoderScanner, "getDecodingSpeed", []);
 };
 
@@ -700,7 +745,7 @@ exports.getDecodingSpeed = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getFormattingType = function(success, error) {
+exports.getFormattingType = function (success, error) {
   exec(success, error, barkoderScanner, "getFormattingType", []);
 };
 
@@ -709,7 +754,7 @@ exports.getFormattingType = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getThreadsLimit = function(success, error) {
+exports.getThreadsLimit = function (success, error) {
   exec(success, error, barkoderScanner, "getThreadsLimit", []);
 };
 
@@ -718,7 +763,7 @@ exports.getThreadsLimit = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getMaximumResultsCount = function(success, error) {
+exports.getMaximumResultsCount = function (success, error) {
   exec(success, error, barkoderScanner, "getMaximumResultsCount", []);
 };
 
@@ -727,7 +772,7 @@ exports.getMaximumResultsCount = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getDuplicatesDelayMs = function(success, error) {
+exports.getDuplicatesDelayMs = function (success, error) {
   exec(success, error, barkoderScanner, "getDuplicatesDelayMs", []);
 };
 
@@ -737,7 +782,7 @@ exports.getDuplicatesDelayMs = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isBarcodeTypeEnabled = function(type, success, error) {
+exports.isBarcodeTypeEnabled = function (type, success, error) {
   exec(success, error, barkoderScanner, "isBarcodeTypeEnabled", [type]);
 };
 
@@ -746,7 +791,7 @@ exports.isBarcodeTypeEnabled = function(type, success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getMulticodeCachingEnabled = function(success, error) {
+exports.getMulticodeCachingEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "getMulticodeCachingEnabled", []);
 };
 
@@ -755,7 +800,7 @@ exports.getMulticodeCachingEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getMulticodeCachingDuration = function(success, error) {
+exports.getMulticodeCachingDuration = function (success, error) {
   exec(success, error, barkoderScanner, "getMulticodeCachingDuration", []);
 };
 
@@ -764,7 +809,7 @@ exports.getMulticodeCachingDuration = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isUpcEanDeblurEnabled = function(success, error) {
+exports.isUpcEanDeblurEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isUpcEanDeblurEnabled", []);
 };
 
@@ -773,7 +818,7 @@ exports.isUpcEanDeblurEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isMisshaped1DEnabled = function(success, error) {
+exports.isMisshaped1DEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isMisshaped1DEnabled", []);
 };
 
@@ -782,7 +827,7 @@ exports.isMisshaped1DEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isBarcodeThumbnailOnResultEnabled = function(success, error) {
+exports.isBarcodeThumbnailOnResultEnabled = function (success, error) {
   exec(
     success,
     error,
@@ -797,7 +842,7 @@ exports.isBarcodeThumbnailOnResultEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getThresholdBetweenDuplicatesScans = function(success, error) {
+exports.getThresholdBetweenDuplicatesScans = function (success, error) {
   exec(
     success,
     error,
@@ -812,7 +857,7 @@ exports.getThresholdBetweenDuplicatesScans = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.isVINRestrictionsEnabled = function(success, error) {
+exports.isVINRestrictionsEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isVINRestrictionsEnabled", []);
 };
 
@@ -821,6 +866,42 @@ exports.isVINRestrictionsEnabled = function(success, error) {
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
-exports.getBarkoderResolution = function(success, error) {
+exports.getBarkoderResolution = function (success, error) {
   exec(success, error, barkoderScanner, "getBarkoderResolution", []);
+};
+
+/**
+ * Retrieves whether Direct Part Marking (DPM) mode for Datamatrix barcodes is enabled
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.isDatamatrixDpmModeEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isDatamatrixDpmModeEnabled", []);
+};
+
+/**
+ * Retrieves whether Direct Part Marking (DPM) mode for QR barcodes is enabled
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.isQrDpmModeEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isQrDpmModeEnabled", []);
+};
+
+/**
+ * Retrieves whether Direct Part Marking (DPM) mode for QR Micro barcodes is enabled
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.isQrMicroDpmModeEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isQrMicroDpmModeEnabled", []);
+};
+
+/**
+ * Retrieves whether Master checksum is enabled when scanning ID Documents
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.isIdDocumentMasterChecksumEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isIdDocumentMasterChecksumEnabled", []);
 };

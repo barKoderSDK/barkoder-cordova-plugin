@@ -3,6 +3,7 @@ package com.barkoder.scanner;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -78,6 +79,11 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("pauseScanning")) {
       this.pauseScanning(callbackContext);
+      return true;
+    }
+    if (action.equals("scanImage")) {
+      resultCallbackContext = callbackContext;
+      this.scanImage(args, callbackContext);
       return true;
     }
     if (action.equals("setLocationLineColor")) {
@@ -220,8 +226,20 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setDatamatrixDpmModeEnabled(args, callbackContext);
       return true;
     }
+    if (action.equals("setQrDpmModeEnabled")) {
+      this.setQrDpmModeEnabled(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setQrMicroDpmModeEnabled")) {
+      this.setQrMicroDpmModeEnabled(args, callbackContext);
+      return true;
+    }
     if (action.equals("configureBarkoder")) {
       this.configureBarkoder(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setIdDocumentMasterChecksumEnabled")) {
+      this.setIdDocumentMasterChecksumEnabled(args, callbackContext);
       return true;
     }
     if (action.equals("isFlashAvailable")) {
@@ -368,6 +386,22 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.getBarkoderResolution(callbackContext);
       return true;
     }
+    if (action.equals("isDatamatrixDpmModeEnabled")) {
+      this.isDatamatrixDpmModeEnabled(callbackContext);
+      return true;
+    }
+    if (action.equals("isQrDpmModeEnabled")) {
+      this.isQrDpmModeEnabled(callbackContext);
+      return true;
+    }
+    if (action.equals("isQrMicroDpmModeEnabled")) {
+      this.isQrMicroDpmModeEnabled(callbackContext);
+      return true;
+    }
+    if (action.equals("isIdDocumentMasterChecksumEnabled")) {
+      this.isIdDocumentMasterChecksumEnabled(callbackContext);
+      return true;
+    }
     return false;
   }
 
@@ -476,6 +510,27 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
 
     callbackContext.success();
+  }
+
+  private void scanImage(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String base64image = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      // Decode the base64 image string into a byte array using android.util.Base64
+    byte[] imageData = android.util.Base64.decode(base64image, android.util.Base64.DEFAULT);
+    if (imageData == null) {
+      return; // If decoding fails, exit
+    }
+
+    // Create a Bitmap from the decoded byte array
+    Bitmap image = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+    if (image == null) {
+      return;
+    }
+
+    // Call the BarkoderHelper's scanImage function with the image, config, and result delegate
+      BarkoderHelper.scanImage(image, barkoderView.config, this, this.barkoderView.getContext());
+    });
   }
 
   private void setLocationLineColor(JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -888,6 +943,22 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     callbackContext.success();
   }
 
+  private void setQrDpmModeEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.getDecoderConfig().QR.dpmMode = enabled);
+
+    callbackContext.success();
+  }
+
+  private void setQrMicroDpmModeEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.getDecoderConfig().QRMicro.dpmMode = enabled);
+
+    callbackContext.success();
+  }
+
   private void configureBarkoder(JSONArray args, CallbackContext callbackContext) throws JSONException {
     JSONObject configAsJson = args.getJSONObject(0);
 
@@ -934,6 +1005,16 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       }
     });
   }
+
+  private void setIdDocumentMasterChecksumEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.getDecoderConfig().IDDocument.masterChecksumType = Barkoder.StandardChecksumType.valueOf(enabled ? 1 : 0));
+
+    callbackContext.success();
+  }
+
+
 
   // Getters
 
@@ -1203,6 +1284,30 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void getBarkoderResolution(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(barkoderView.config.getBarkoderResolution().ordinal());
+    });
+  }
+
+  private void isDatamatrixDpmModeEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().Datamatrix.dpmMode));
+    });
+  }
+
+  private void isQrDpmModeEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().QR.dpmMode));
+    });
+  }
+
+  private void isQrMicroDpmModeEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().QRMicro.dpmMode));
+    });
+  }
+
+  private void isIdDocumentMasterChecksumEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().IDDocument.masterChecksumType.ordinal() == 1));
     });
   }
 
