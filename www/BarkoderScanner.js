@@ -540,6 +540,107 @@ exports.setIdDocumentMasterChecksumEnabled = function (enabled, success, error) 
   ]);
 };
 
+/**
+ * Sets whether the UPC-E barcodes should be expanded to UPC-A format.
+ * @param {*} enabled - A boolean indicating whether to enable the expansion for UPC-E barcodes.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setUPCEexpandToUPCA = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setUPCEexpandToUPCA", [enabled]);
+};
+
+/**
+ * Sets whether the UPC-E1 barcodes should be expanded to UPC-A format.
+ * @param {*} enabled - A boolean indicating whether to enable the expansion for UPC-E1 barcodes.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setUPCE1expandToUPCA = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setUPCE1expandToUPCA", [enabled]);
+};
+
+/**
+ * Sets the color of the lines outlining the scanning indicator for barcode scanning on the camera feed.
+ * @param {*} hexColor - The hexadecimal representation of the color.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setScanningIndicatorColor = function (hexColor, success, error) {
+  exec(success, error, barkoderScanner, "setScanningIndicatorColor", [hexColor]);
+};
+
+/**
+ * Sets the width of the scanning indicator for barcode scanning on the camera feed.
+ * @param {*} lineWidth - The width of the scanning indicator to set.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setScanningIndicatorWidth = function (lineWidth, success, error) {
+  exec(success, error, barkoderScanner, "setScanningIndicatorWidth", [lineWidth]);
+};
+
+/**
+ * Sets the animation of the scanning indicator for barcode scanning on the camera feed.
+ * @param {*} animation - The animation of the scanning indicator to set.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setScanningIndicatorAnimation = function (animation, success, error) {
+  exec(success, error, barkoderScanner, "setScanningIndicatorAnimation", [animation]);
+};
+
+/**
+ * Sets the scanning indicator to be always shown on the camera feed.
+ * @param {*} value - A boolean indicating whether the scanning indicator should always remain visible.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setScanningIndicatorAlwaysVisible = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setScanningIndicatorAlwaysVisible", [value]);
+};
+
+/**
+ * Sets a custom option.
+ * @param {*} option - The string value for the custom option.
+ * @param {*} value - The integer value for the custom option.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setCustomOption = function (option, value, success, error) {
+  exec(success, error, barkoderScanner, "setCustomOption", [option, value]);
+};
+
+/**
+ * Sets the camera's exposure dynamically based on the provided intensity, cycling through predefined compensation values.
+ * @param {*} intesnity - The integer value for the exposure intensity.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setDynamicExposure = function (intesnity, success, error) {
+  exec(success, error, barkoderScanner, "setDynamicExposure", [intesnity]);
+};
+
+/**
+ * Sets the camera to use the center of the viewfinder for focus and exposure.
+ * @param {*} value - A boolean indicating whether the center of the viewfinder should be used.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setCentricFocusAndExposure = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setCentricFocusAndExposure", [value]);
+};
+
+/**
+ * Sets wheter Composite Mode should be enabled when scanning.
+ * @param {*} value - The integer value if composite mode should be enabled.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setEnableComposite = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setEnableComposite", [value]);
+};
+
 // - Getters
 
 /**
@@ -904,4 +1005,40 @@ exports.isQrMicroDpmModeEnabled = function (success, error) {
  */
 exports.isIdDocumentMasterChecksumEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isIdDocumentMasterChecksumEnabled", []);
+};
+
+/**
+ * Retrieves the hexadecimal color code representing the line color of the scanning indicator on the camera preview.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getScanningIndicatorColorHex = function (success, error) {
+  exec(success, error, barkoderScanner, "getScanningIndicatorColorHex", []);
+};
+
+/**
+ * Retrieves the current width setting for the scanning indicator on the camera preview.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getScanningIndicatorWidth = function (success, error) {
+  exec(success, error, barkoderScanner, "getScanningIndicatorWidth", []);
+};
+
+/**
+ * Retrieves the current animation setting for the scanning indicator on the camera preview.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getScanningIndicatorAnimation = function (success, error) {
+  exec(success, error, barkoderScanner, "getScanningIndicatorAnimation", []);
+};
+
+/**
+ * Retrieves whether the scanning indicator is always visible on the camera preview.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.isScanningIndicatorAlwaysVisible = function (success, error) {
+  exec(success, error, barkoderScanner, "isScanningIndicatorAlwaysVisible", []);
 };

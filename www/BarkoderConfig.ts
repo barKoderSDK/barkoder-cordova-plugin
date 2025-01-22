@@ -34,8 +34,9 @@ export enum Code11ChecksumType {
 }
 
 export enum BarkoderResolution {
-  normal,
-  high
+  HD,
+  FHD,
+  UHD,
 }
 
 export enum BarcodeType {
@@ -67,7 +68,10 @@ export enum BarcodeType {
   code32,
   telepen,
   dotcode,
-  idDocument
+  idDocument,
+  databar14,         
+  databarLimited,
+  databarExpanded 
 }
 
 export class BarkoderConfig {
@@ -76,6 +80,10 @@ export class BarkoderConfig {
   roiLineColor?: string;
   roiLineWidth?: number;
   roiOverlayBackgroundColor?: string;
+  scanningIndicatorColor?: string;
+  scanningIndicatorWidth?: number;
+  scanningIndicatorAnimation?: number;
+  scanningIndicatorAlwaysVisible?: boolean;
   closeSessionOnResultEnabled?: boolean;
   imageResultEnabled?: boolean;
   locationInImageResultEnabled?: boolean;
@@ -123,6 +131,9 @@ export class DekoderConfig {
   telepen?: BarcodeConfig;
   dotcode?: BarcodeConfig;
   idDocument?: IdDocumentBarcodeConfig;
+  databar14?: BarcodeConfig;         
+  databarLimited?: BarcodeConfig;
+  databarExpanded?: BarcodeConfig;
   general?: GeneralSettings;
 
   constructor(config: Partial<DekoderConfig>) {

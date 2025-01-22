@@ -56,6 +56,16 @@
 - (void)setQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)configureBarkoder:(CDVInvokedUrlCommand*)command;
 - (void)setIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand*)command;
+- (void)setUPCEexpandToUPCA:(CDVInvokedUrlCommand *)command;
+- (void)setUPCE1expandToUPCA:(CDVInvokedUrlCommand *)command;
+- (void)setCustomOption:(CDVInvokedUrlCommand *)command;
+- (void)setScanningIndicatorColor:(CDVInvokedUrlCommand *)command;
+- (void)setScanningIndicatorWidth:(CDVInvokedUrlCommand *)command;
+- (void)setScanningIndicatorAnimation:(CDVInvokedUrlCommand *)command;
+- (void)setScanningIndicatorAlwaysVisible:(CDVInvokedUrlCommand *)command;
+- (void)setDynamicExposure:(CDVInvokedUrlCommand *)command;
+- (void)setCentricFocusAndExposure:(CDVInvokedUrlCommand *)command;
+- (void)setEnableComposite:(CDVInvokedUrlCommand *)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -97,6 +107,10 @@
 - (void)isQrDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand*)command;
+- (void)getScanningIndicatorColorHex:(CDVInvokedUrlCommand *)command;
+- (void)getScanningIndicatorWidth:(CDVInvokedUrlCommand *)command;
+- (void)getScanningIndicatorAnimation:(CDVInvokedUrlCommand *)command;
+- (void)isScanningIndicatorAlwaysVisible:(CDVInvokedUrlCommand *)command;
 
 
 
@@ -408,7 +422,7 @@ CDVPluginResult* pluginResult = nil;
     
     BarkoderResolution barkoderResolution = (BarkoderResolution) index;
     
-    if (barkoderResolution == BarkoderResolutionNormal || barkoderResolution == BarkoderResolutionHigh) { // Normal = 0, High = 1
+    if (barkoderResolution == BarkoderResolutionHD || barkoderResolution == BarkoderResolutionFHD || barkoderResolution ==  BarkoderResolutionUHD) { // HD = 0, FHD = 1, UHD = 2
         [barkoderView.config setBarkoderResolution:barkoderResolution];
         
         [self callbackSuccess:command];
@@ -642,6 +656,12 @@ CDVPluginResult* pluginResult = nil;
             decoderConfig.dotcode.enabled = enabled;
         case IDDocument:
             decoderConfig.idDocument.enabled = enabled;
+        case Databar14:
+            decoderConfig.databar14.enabled = enabled;
+        case DatabarLimited:
+            decoderConfig.databarLimited.enabled = enabled;
+        case DatabarExpanded:
+            decoderConfig.databarExpanded.enabled = enabled;
             break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
@@ -769,14 +789,19 @@ CDVPluginResult* pluginResult = nil;
         if (colorHexCodeRoiOverlayBackgroundColor) {
             barkoderConfigAsDictionary[@"roiOverlayBackgroundColor"] = [self parseColor:colorHexCodeRoiOverlayBackgroundColor];
         }
+
+        NSString *colorHexCodeScanningIndicatorColor = barkoderConfigAsDictionary[@"scanningIndicatorColor"];
+        if (colorHexCodeScanningIndicatorColor) {
+            barkoderConfigAsDictionary[@"scanningIndicatorColor"] = [self parseColor:colorHexCodeScanningIndicatorColor];
+        }
         
         NSError *error = nil;
         NSData *jsonData = [NSJSONSerialization dataWithJSONObject:barkoderConfigAsDictionary options:NSJSONWritingPrettyPrinted error:&error];
         
         NSString *convertedBarkoderConfigAsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         
-        NSArray *keys = @[@"aztec", @"aztecCompact", @"qr", @"qrMicro", @"code128", @"code93", @"code39", @"codabar", @"code11", @"msi", @"upcA", @"upcE", @"upcE1", @"ean13", @"ean8", @"pdf417", @"pdf417Micro", @"datamatrix", @"code25", @"interleaved25", @"itf14", @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode", @"idDocument", @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"];
-        NSArray *values = @[@"Aztec", @"Aztec Compact", @"QR", @"QR Micro", @"Code 128", @"Code 93", @"Code 39", @"Codabar", @"Code 11", @"MSI", @"Upc-A", @"Upc-E", @"Upc-E1", @"Ean-13", @"Ean-8", @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14", @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode", @"ID Document", @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"];
+        NSArray *keys = @[@"aztec", @"aztecCompact", @"qr", @"qrMicro", @"code128", @"code93", @"code39", @"codabar", @"code11", @"msi", @"upcA", @"upcE", @"upcE1", @"ean13", @"ean8", @"pdf417", @"pdf417Micro", @"datamatrix", @"code25", @"interleaved25", @"itf14", @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode", @"idDocument", @"databar14", @"databarLimited", @"databarExpanded", @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"];
+        NSArray *values = @[@"Aztec", @"Aztec Compact", @"QR", @"QR Micro", @"Code 128", @"Code 93", @"Code 39", @"Codabar", @"Code 11", @"MSI", @"Upc-A", @"Upc-E", @"Upc-E1", @"Ean-13", @"Ean-8", @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14", @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode", @"ID Document", @"Databar 14", @"Databar Limited", @"Databar Expanded", @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"];
         
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
         for (int i = 0; i < keys.count; i++) {
@@ -819,6 +844,67 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
   }
   
+}
+
+- (void)setUPCEexpandToUPCA:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.decoderConfig.upcE.expandToUPCA = enabled;
+    [self callbackSuccess:command];
+}
+
+- (void)setUPCE1expandToUPCA:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.decoderConfig.upcE1.expandToUPCA = enabled;
+    [self callbackSuccess:command];
+}
+
+- (void)setCustomOption:(CDVInvokedUrlCommand *)command {
+    NSString *option = [command.arguments objectAtIndex:0];
+    int value = [[command.arguments objectAtIndex:1] intValue];
+    [barkoderView.config.decoderConfig setcustomOption:option value:value];
+    [self callbackSuccess:command];
+}
+
+- (void)setScanningIndicatorColor:(CDVInvokedUrlCommand *)command {
+    NSString *hexColor = [command.arguments objectAtIndex:0];
+    [barkoderView.config setScanningIndicatorColor:[self colorWithHexString:hexColor command:command]];
+    [self callbackSuccess:command];
+}
+
+- (void)setScanningIndicatorWidth:(CDVInvokedUrlCommand *)command {
+    CGFloat lineWidth = [[command.arguments objectAtIndex:0] floatValue];
+    [barkoderView.config setScanningIndicatorWidth:lineWidth];
+    [self callbackSuccess:command];
+}
+
+- (void)setScanningIndicatorAnimation:(CDVInvokedUrlCommand *)command {
+    int animation = [[command.arguments objectAtIndex:0] intValue];
+    [barkoderView.config setScanningIndicatorAnimation:animation];
+    [self callbackSuccess:command];
+}
+
+- (void)setScanningIndicatorAlwaysVisible:(CDVInvokedUrlCommand *)command {
+    BOOL alwaysVisible = [[command.arguments objectAtIndex:0] boolValue];
+  [barkoderView.config setScanningIndicatorAlwaysVisible:alwaysVisible];
+    [self callbackSuccess:command];
+}
+
+- (void)setDynamicExposure:(CDVInvokedUrlCommand *)command {
+    int dynamicExposure = [[command.arguments objectAtIndex:0] intValue];
+    [barkoderView setDynamicExposure:dynamicExposure];
+    [self callbackSuccess:command];
+}
+
+- (void)setCentricFocusAndExposure:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    [barkoderView setCentricFocusAndExposure:enabled];
+    [self callbackSuccess:command];
+}
+
+- (void)setEnableComposite:(CDVInvokedUrlCommand *)command {
+    int enableComposite = [[command.arguments objectAtIndex:0] intValue];
+    [barkoderView.config.decoderConfig setEnableComposite:enableComposite];
+    [self callbackSuccess:command];
 }
 
 // MARK: - Getters
@@ -1071,6 +1157,15 @@ CDVPluginResult* pluginResult = nil;
         case IDDocument:
             [self callbackSuccessBoolean:command boolean:decoderConfig.idDocument.enabled];
             break;
+        case Databar14:
+            [self callbackSuccessBoolean:command boolean:decoderConfig.databar14.enabled];
+          break;
+        case DatabarLimited:
+            [self callbackSuccessBoolean:command boolean:decoderConfig.databarLimited.enabled];
+          break;
+        case DatabarExpanded:
+            [self callbackSuccessBoolean:command boolean:decoderConfig.databarExpanded.enabled];
+          break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
     }
@@ -1126,6 +1221,22 @@ CDVPluginResult* pluginResult = nil;
 - (void)isIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand *)command {
     BOOL isEnabled = (barkoderView.config.decoderConfig.idDocument.masterChecksum == 1);
     [self callbackSuccessBoolean:command boolean:isEnabled];
+}
+
+- (void)getScanningIndicatorColorHex:(CDVInvokedUrlCommand *)command {
+  [self callbackSuccessMessage:command message:[self colorToHex:[barkoderView.config scanningIndicatorColor]]];
+}
+
+- (void)getScanningIndicatorWidth:(CDVInvokedUrlCommand *)command {
+  [self callbackSuccessDouble:command value:[barkoderView.config scanningIndicatorWidth]];
+}
+
+- (void)getScanningIndicatorAnimation:(CDVInvokedUrlCommand *)command {
+  [self callbackSuccessInt:command value:(int)[barkoderView.config scanningIndicatorAnimation]];
+}
+
+- (void)isScanningIndicatorAlwaysVisible:(CDVInvokedUrlCommand *)command {
+  [self callbackSuccessBoolean:command boolean:[barkoderView.config scanningIndicatorAlwaysVisible]];
 }
 
 
@@ -1211,7 +1322,8 @@ CDVPluginResult* pluginResult = nil;
 
 - (nullable NSNumber *)parseColor:(NSString *)hexColor {
     NSString *cleanedHexColor = [hexColor stringByReplacingOccurrencesOfString:@"#" withString:@""];
-    return [NSNumber numberWithInteger:strtol([cleanedHexColor UTF8String], NULL, 16)];
+    NSString *argbHexColor = [@"FF" stringByAppendingString:cleanedHexColor];
+    return [NSNumber numberWithUnsignedInteger:strtol([argbHexColor UTF8String], NULL, 16)];
 }
 
 - (UIColor *)colorWithHexString:(NSString *)hexString command:(CDVInvokedUrlCommand*)command {

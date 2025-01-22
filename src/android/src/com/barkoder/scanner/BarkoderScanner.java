@@ -242,6 +242,46 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setIdDocumentMasterChecksumEnabled(args, callbackContext);
       return true;
     }
+    if (action.equals("setUPCEexpandToUPCA")) {
+      this.setUPCEexpandToUPCA(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setUPCE1expandToUPCA")) {
+      this.setUPCE1expandToUPCA(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setCustomOption")) {
+      this.setCustomOption(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setScanningIndicatorColor")) {
+      this.setScanningIndicatorColor(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setScanningIndicatorWidth")) {
+      this.setScanningIndicatorWidth(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setScanningIndicatorAnimation")) {
+      this.setScanningIndicatorAnimation(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setScanningIndicatorAlwaysVisible")) {
+      this.setScanningIndicatorAlwaysVisible(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setDynamicExposure")) {
+      this.setDynamicExposure(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setCentricFocusAndExposure")) {
+      this.setCentricFocusAndExposure(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setEnableComposite")) {
+      this.setEnableComposite(args, callbackContext);
+      return true;
+    }
     if (action.equals("isFlashAvailable")) {
       this.isFlashAvailable(callbackContext);
       return true;
@@ -402,6 +442,22 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.isIdDocumentMasterChecksumEnabled(callbackContext);
       return true;
     }
+    if (action.equals("getScanningIndicatorColorHex")) {
+      this.getScanningIndicatorColorHex(callbackContext);
+      return true;
+    }
+    if (action.equals("getScanningIndicatorWidth")) {
+      this.getScanningIndicatorWidth(callbackContext);
+      return true;
+    }
+    if (action.equals("getScanningIndicatorAnimation")) {
+      this.getScanningIndicatorAnimation(callbackContext);
+      return true;
+    }
+    if (action.equals("isScanningIndicatorAlwaysVisible")) {
+      this.isScanningIndicatorAlwaysVisible(callbackContext);
+      return true;
+    }
     return false;
   }
 
@@ -437,7 +493,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     // In order to perform scanning, config property need to be set before
     // If license key is not valid you will receive results with asterisks inside
     barkoderView.config = new BarkoderConfig(context, licenseKey, licenseCheckResult ->
-      BarkoderLog.i(TAG, "LICENSE RESULT: " + licenseCheckResult.message));
+            BarkoderLog.i(TAG, "LICENSE RESULT: " + licenseCheckResult.message));
   }
 
   private void registerWithLicenseKey(JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -517,18 +573,18 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
 
     this.cordova.getActivity().runOnUiThread(() -> {
       // Decode the base64 image string into a byte array using android.util.Base64
-    byte[] imageData = android.util.Base64.decode(base64image, android.util.Base64.DEFAULT);
-    if (imageData == null) {
-      return; // If decoding fails, exit
-    }
+      byte[] imageData = android.util.Base64.decode(base64image, android.util.Base64.DEFAULT);
+      if (imageData == null) {
+        return; // If decoding fails, exit
+      }
 
-    // Create a Bitmap from the decoded byte array
-    Bitmap image = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
-    if (image == null) {
-      return;
-    }
+      // Create a Bitmap from the decoded byte array
+      Bitmap image = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+      if (image == null) {
+        return;
+      }
 
-    // Call the BarkoderHelper's scanImage function with the image, config, and result delegate
+      // Call the BarkoderHelper's scanImage function with the image, config, and result delegate
       BarkoderHelper.scanImage(image, barkoderView.config, this, this.barkoderView.getContext());
     });
   }
@@ -725,14 +781,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
 
     this.cordova.getActivity().runOnUiThread(() -> {
       if (barcodeTypeOrdinal == Barkoder.BarcodeType.Code128.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Code93.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Code39.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Codabar.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Code11.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Msi.ordinal()) {
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Code93.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Code39.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Codabar.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Code11.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Msi.ordinal()) {
         try {
           final Barkoder.SpecificConfig specificConfig = BarkoderUtil.getSpecificConfigRefFromBarcodeTypeOrdinal(barcodeTypeOrdinal,
-            barkoderView.config.getDecoderConfig());
+                  barkoderView.config.getDecoderConfig());
 
           if (specificConfig != null) {
             if (specificConfig.setLengthRange(min, max) == 0)
@@ -830,7 +886,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     this.cordova.getActivity().runOnUiThread(() -> {
       try {
         final Barkoder.SpecificConfig specificConfig = BarkoderUtil.getSpecificConfigRefFromBarcodeTypeOrdinal(barcodeTypeOrdinal,
-          barkoderView.config.getDecoderConfig());
+                barkoderView.config.getDecoderConfig());
 
         if (specificConfig != null) {
           specificConfig.enabled = enabled;
@@ -980,11 +1036,16 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
           configAsJson.put("locationLineColor", BarkoderUtil.hexColorToIntColor(colorAsHex));
         }
 
+        if (configAsJson.has("scanningIndicatorColor")) {
+          String colorAsHex = configAsJson.getString("scanningIndicatorColor");
+          configAsJson.put("scanningIndicatorColor", BarkoderUtil.hexColorToIntColor(colorAsHex));
+        }
+
         String convertedBarkoderConfigAsString = configAsJson.toString();
 
-        String[] keys = {"aztec", "aztecCompact", "qr", "qrMicro", "code128", "code93", "code39", "codabar", "code11", "msi", "upcA", "upcE", "upcE1", "ean13", "ean8", "pdf417", "pdf417Micro", "datamatrix", "code25", "interleaved25", "itf14", "iata25", "matrix25", "datalogic25", "coop25", "code32", "telepen", "dotcode", "idDocument", "minLength", "maxLength", "threadsLimit", "roiX", "roiY", "roiWidth", "roiHeight"};
+        String[] keys = {"aztec", "aztecCompact", "qr", "qrMicro", "code128", "code93", "code39", "codabar", "code11", "msi", "upcA", "upcE", "upcE1", "ean13", "ean8", "pdf417", "pdf417Micro", "datamatrix", "code25", "interleaved25", "itf14", "iata25", "matrix25", "datalogic25", "coop25", "code32", "telepen", "dotcode", "idDocument", "databar14", "databarLimited", "databarExpanded", "minLength", "maxLength", "threadsLimit", "roiX", "roiY", "roiWidth", "roiHeight"};
 
-        String[] values = {"Aztec", "Aztec Compact", "QR", "QR Micro", "Code 128", "Code 93", "Code 39", "Codabar", "Code 11", "MSI", "Upc-A", "Upc-E", "Upc-E1", "Ean-13", "Ean-8", "PDF 417", "PDF 417 Micro", "Datamatrix", "Code 25", "Interleaved 2 of 5", "ITF 14", "IATA 25", "Matrix 25", "Datalogic 25", "COOP 25", "Code 32", "Telepen", "Dotcode", "ID Document", "minimumLength", "maximumLength", "maxThreads", "roi_x", "roi_y", "roi_w", "roi_h"};
+        String[] values = {"Aztec", "Aztec Compact", "QR", "QR Micro", "Code 128", "Code 93", "Code 39", "Codabar", "Code 11", "MSI", "Upc-A", "Upc-E", "Upc-E1", "Ean-13", "Ean-8", "PDF 417", "PDF 417 Micro", "Datamatrix", "Code 25", "Interleaved 2 of 5", "ITF 14", "IATA 25", "Matrix 25", "Datalogic 25", "COOP 25", "Code 32", "Telepen", "Dotcode", "ID Document", "Databar 14", "Databar Limited", "Databar Expanded", "minimumLength", "maximumLength", "maxThreads", "roi_x", "roi_y", "roi_w", "roi_h"};
 
         Map<String, String> map = new HashMap<>();
         for (int i = 0; i < keys.length; i++) {
@@ -1014,7 +1075,96 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     callbackContext.success();
   }
 
+  private void setUPCEexpandToUPCA(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
 
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.getDecoderConfig().UpcE.expandToUPCA = value);
+
+    callbackContext.success();
+  }
+
+  private void setUPCE1expandToUPCA(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.getDecoderConfig().UpcE1.expandToUPCA = value);
+
+    callbackContext.success();
+  }
+
+  private void setCustomOption(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String option = args.getString(0);
+    int value = args.getInt(1);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      Barkoder.SetCustomOption(barkoderView.config.getDecoderConfig(), option, value);
+    });
+  }
+
+  private void setScanningIndicatorColor(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String hexColor = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.setScanningIndicatorColor(BarkoderUtil.hexColorToIntColor(hexColor));
+    });
+
+    callbackContext.success();
+  }
+
+  private void setScanningIndicatorWidth(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    double lineWidth = args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.setScanningIndicatorWidth((float) lineWidth);
+    });
+
+    callbackContext.success();
+  }
+
+  private void setScanningIndicatorAnimation(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int animation = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.setScanningIndicatorAnimation(animation);
+    });
+
+    callbackContext.success();
+  }
+
+  private void setScanningIndicatorAlwaysVisible(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.setScanningIndicatorAlwaysVisible(value));
+
+    callbackContext.success();
+  }
+
+  private void setDynamicExposure(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int dynamicExposure = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.setDynamicExposure(dynamicExposure);
+    });
+
+    callbackContext.success();
+  }
+
+  private void setCentricFocusAndExposure(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.setCentricFocusAndExposure(value));
+
+    callbackContext.success();
+  }
+
+  private void setEnableComposite(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int value = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getDecoderConfig().enableComposite = value;
+    });
+
+    callbackContext.success();
+  }
 
   // Getters
 
@@ -1138,15 +1288,15 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
 
     this.cordova.getActivity().runOnUiThread(() -> {
       if (barcodeTypeOrdinal == Barkoder.BarcodeType.Code128.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Code93.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Code39.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Codabar.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Code11.ordinal() ||
-        barcodeTypeOrdinal == Barkoder.BarcodeType.Msi.ordinal()) {
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Code93.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Code39.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Codabar.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Code11.ordinal() ||
+              barcodeTypeOrdinal == Barkoder.BarcodeType.Msi.ordinal()) {
 
         try {
           final Barkoder.SpecificConfig specificConfig = BarkoderUtil.getSpecificConfigRefFromBarcodeTypeOrdinal(barcodeTypeOrdinal,
-            barkoderView.config.getDecoderConfig());
+                  barkoderView.config.getDecoderConfig());
 
           if (specificConfig != null) {
             JSONObject jsonObject = new JSONObject();
@@ -1224,7 +1374,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     this.cordova.getActivity().runOnUiThread(() -> {
       try {
         final Barkoder.SpecificConfig specificConfig = BarkoderUtil.getSpecificConfigRefFromBarcodeTypeOrdinal(barcodeTypeOrdinal,
-          barkoderView.config.getDecoderConfig());
+                barkoderView.config.getDecoderConfig());
 
         if (specificConfig != null) {
           JSONObject jsonObject = new JSONObject();
@@ -1308,6 +1458,31 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void isIdDocumentMasterChecksumEnabled(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().IDDocument.masterChecksumType.ordinal() == 1));
+    });
+  }
+
+  private void getScanningIndicatorColorHex(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      String hexColor = String.format("#%08X", barkoderView.config.getScanningIndicatorColor());
+      callbackContext.success(hexColor);
+    });
+  }
+
+  private void getScanningIndicatorWidth(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getScanningIndicatorWidth()));
+    });
+  }
+
+  private void getScanningIndicatorAnimation(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getScanningIndicatorAnimation()));
+    });
+  }
+
+  private void isScanningIndicatorAlwaysVisible(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.isScanningIndicatorAlwaysVisible()));
     });
   }
 
