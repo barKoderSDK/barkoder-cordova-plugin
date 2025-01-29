@@ -66,6 +66,7 @@
 - (void)setDynamicExposure:(CDVInvokedUrlCommand *)command;
 - (void)setCentricFocusAndExposure:(CDVInvokedUrlCommand *)command;
 - (void)setEnableComposite:(CDVInvokedUrlCommand *)command;
+- (void)setVideoStabilization:(CDVInvokedUrlCommand *)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -904,6 +905,12 @@ CDVPluginResult* pluginResult = nil;
 - (void)setEnableComposite:(CDVInvokedUrlCommand *)command {
     int enableComposite = [[command.arguments objectAtIndex:0] intValue];
     [barkoderView.config.decoderConfig setEnableComposite:enableComposite];
+    [self callbackSuccess:command];
+}
+
+- (void)setVideoStabilization:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    [barkoderView setVideoStabilization:enabled];
     [self callbackSuccess:command];
 }
 

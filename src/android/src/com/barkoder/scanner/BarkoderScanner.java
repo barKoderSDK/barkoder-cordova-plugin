@@ -282,6 +282,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setEnableComposite(args, callbackContext);
       return true;
     }
+    if (action.equals("setVideoStabilization")) {
+      this.setVideoStabilization(args, callbackContext);
+      return true;
+    }
     if (action.equals("isFlashAvailable")) {
       this.isFlashAvailable(callbackContext);
       return true;
@@ -1162,6 +1166,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     this.cordova.getActivity().runOnUiThread(() -> {
       barkoderView.config.getDecoderConfig().enableComposite = value;
     });
+
+    callbackContext.success();
+  }
+
+  private void setVideoStabilization(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.setVideoStabilization(value));
 
     callbackContext.success();
   }

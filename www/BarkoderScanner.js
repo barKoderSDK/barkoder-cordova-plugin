@@ -641,6 +641,16 @@ exports.setEnableComposite = function (value, success, error) {
   exec(success, error, barkoderScanner, "setEnableComposite", [value]);
 };
 
+/**
+ * Enable or disable video stabilization for smoother video capture.
+ * @param {*} value - A boolean indicating whether video stabilization should be enabled/disabled.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setVideoStabilization = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setVideoStabilization", [value]);
+};
+
 // - Getters
 
 /**
