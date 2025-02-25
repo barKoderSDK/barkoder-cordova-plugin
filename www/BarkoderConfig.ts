@@ -33,6 +33,11 @@ export enum Code11ChecksumType {
   double
 }
 
+export enum BarkoderCameraPosition {
+  BACK,
+  FRONT,
+}
+
 export enum BarkoderResolution {
   HD,
   FHD,

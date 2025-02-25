@@ -67,6 +67,7 @@
 - (void)setCentricFocusAndExposure:(CDVInvokedUrlCommand *)command;
 - (void)setEnableComposite:(CDVInvokedUrlCommand *)command;
 - (void)setVideoStabilization:(CDVInvokedUrlCommand *)command;
+- (void)setCamera:(CDVInvokedUrlCommand *)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -128,7 +129,8 @@ typedef NS_ENUM(NSInteger, BarkoderErrors) {
     FORMATTING_TYPE_NOT_FOUNDED,
     LENGTH_RANGE_NOT_VALID,
     CHECKSUM_TYPE_NOT_FOUNDED,
-    BARKODER_CONFIG_IS_NOT_VALID
+    BARKODER_CONFIG_IS_NOT_VALID,
+    INVALID_CAMERA_POSITION
 };
 
 // Method to get the error code based on the error type
@@ -914,6 +916,20 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setCamera:(CDVInvokedUrlCommand *)command {
+  int index = [[command.arguments objectAtIndex:0] intValue];
+  
+  BarkoderCameraPosition barkoderCameraPosition = (BarkoderCameraPosition) index;
+  
+  if (barkoderCameraPosition == BarkoderCameraPositionBACK || barkoderCameraPosition == BarkoderCameraPositionFRONT) { // BACK = 0, FRONT = 1
+    [barkoderView setCamera:barkoderCameraPosition];
+    
+    [self callbackSuccess:command];
+  } else {
+    [self callbackErrorMessage:command message:[self barkoderErorrMessage:INVALID_CAMERA_POSITION]];
+  }
+}
+
 // MARK: - Getters
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand *)command {
@@ -1423,6 +1439,8 @@ CDVPluginResult* pluginResult = nil;
             return @"11";
         case BARKODER_CONFIG_IS_NOT_VALID:
             return @"12";
+        case INVALID_CAMERA_POSITION:
+            return @"13";
     }
 }
 
@@ -1452,6 +1470,9 @@ CDVPluginResult* pluginResult = nil;
             return @"Checksum type can't be founded.";
         case BARKODER_CONFIG_IS_NOT_VALID:
             return @"";
+        case INVALID_CAMERA_POSITION:
+            return @"Invalid camera position";
+        break;
     }
 }
 

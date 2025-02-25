@@ -651,6 +651,16 @@ exports.setVideoStabilization = function (value, success, error) {
   exec(success, error, barkoderScanner, "setVideoStabilization", [value]);
 };
 
+/**
+ * Sets the camera to be used for scanning (back/front).
+ * @param {*} value - The value which camera should be used.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setCamera = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setCamera", [value]);
+};
+
 // - Getters
 
 /**

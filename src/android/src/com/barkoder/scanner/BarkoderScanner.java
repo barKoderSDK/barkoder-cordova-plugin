@@ -28,6 +28,7 @@ import com.barkoder.BarkoderLog;
 import com.barkoder.BarkoderView;
 
 import com.barkoder.BarkoderHelper;
+import com.barkoder.enums.BarkoderCameraPosition;
 import com.barkoder.enums.BarkoderResolution;
 import com.barkoder.interfaces.BarkoderResultCallback;
 
@@ -284,6 +285,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("setVideoStabilization")) {
       this.setVideoStabilization(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setCamera")) {
+      this.setCamera(args, callbackContext);
       return true;
     }
     if (action.equals("isFlashAvailable")) {
@@ -1176,6 +1181,22 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     this.cordova.getActivity().runOnUiThread(() -> barkoderView.setVideoStabilization(value));
 
     callbackContext.success();
+  }
+
+  private void setCamera(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int index = args.getInt(0);
+
+    if (index < 0 || index >= BarkoderCameraPosition.values().length) {
+      callbackContext.error(BarkoderErrors.INVALID_CAMERA_POSITION + BarkoderErrors.INVALID_CAMERA_POSITION.getErrorMessage());
+      return;
+    }
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      BarkoderCameraPosition bkdCameraPosition = BarkoderCameraPosition.values()[index];
+      barkoderView.setCamera(bkdCameraPosition);
+
+      callbackContext.success();
+    });
   }
 
   // Getters
