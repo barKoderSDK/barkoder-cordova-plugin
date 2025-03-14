@@ -9,7 +9,8 @@ export enum FormattingType {
   disabled,
   automatic,
   gs1,
-  aamva
+  aamva,
+  sadl
 }
 
 export enum MsiChecksumType {
@@ -76,7 +77,14 @@ export enum BarcodeType {
   idDocument,
   databar14,         
   databarLimited,
-  databarExpanded 
+  databarExpanded,
+  postalIMB,
+  postnet,
+  planet,
+  australianPost,
+  royalMail,
+  kix,
+  japanesePost
 }
 
 export class BarkoderConfig {
@@ -139,6 +147,13 @@ export class DekoderConfig {
   databar14?: BarcodeConfig;         
   databarLimited?: BarcodeConfig;
   databarExpanded?: BarcodeConfig;
+  postalIMB?: BarcodeConfig;
+  postnet?: BarcodeConfig;
+  planet?: BarcodeConfig;
+  australianPost?: BarcodeConfig;
+  royalMail?: BarcodeConfig;
+  kix?: BarcodeConfig;
+  japanesePost?: BarcodeConfig;
   general?: GeneralSettings;
 
   constructor(config: Partial<DekoderConfig>) {
