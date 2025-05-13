@@ -28,9 +28,13 @@ import com.barkoder.BarkoderLog;
 import com.barkoder.BarkoderView;
 
 import com.barkoder.BarkoderHelper;
+import com.barkoder.enums.BarkoderARHeaderShowMode;
+import com.barkoder.enums.BarkoderARLocationType;
+import com.barkoder.enums.BarkoderARMode;
 import com.barkoder.enums.BarkoderCameraPosition;
 import com.barkoder.enums.BarkoderResolution;
 import com.barkoder.interfaces.BarkoderResultCallback;
+import com.barkoder.overlaymanager.BarkoderAROverlayRefresh;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -80,6 +84,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("pauseScanning")) {
       this.pauseScanning(callbackContext);
+      return true;
+    }
+    if (action.equals("freezeScanning")) {
+      this.freezeScanning(callbackContext);
+      return true;
+    }
+    if (action.equals("unfreezeScanning")) {
+      this.unfreezeScanning(callbackContext);
       return true;
     }
     if (action.equals("scanImage")) {
@@ -203,10 +215,6 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setBarcodeThumbnailOnResultEnabled(args, callbackContext);
       return true;
     }
-    if (action.equals("setDuplicatesDelayMs")) {
-      this.setDuplicatesDelayMs(args, callbackContext);
-      return true;
-    }
     if (action.equals("setThresholdBetweenDuplicatesScans")) {
       this.setThresholdBetweenDuplicatesScans(args, callbackContext);
       return true;
@@ -289,6 +297,86 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("setCamera")) {
       this.setCamera(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setShowDuplicatesLocations")) {
+      this.setShowDuplicatesLocations(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARMode")) {
+      this.setARMode(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARResultDisappearanceDelayMs")) {
+      this.setARResultDisappearanceDelayMs(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARLocationTransitionSpeed")) {
+      this.setARLocationTransitionSpeed(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setAROverlayRefresh")) {
+      this.setAROverlayRefresh(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARSelectedLocationColor")) {
+      this.setARSelectedLocationColor(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARNonSelectedLocationColor")) {
+      this.setARNonSelectedLocationColor(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARSelectedLocationLineWidth")) {
+      this.setARSelectedLocationLineWidth(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARNonSelectedLocationLineWidth")) {
+      this.setARNonSelectedLocationLineWidth(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARLocationType")) {
+      this.setARLocationType(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARDoubleTapToFreezeEnabled")) {
+      this.setARDoubleTapToFreezeEnabled(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderHeight")) {
+      this.setARHeaderHeight(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderShowMode")) {
+      this.setARHeaderShowMode(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderMaxTextHeight")) {
+      this.setARHeaderMaxTextHeight(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderMinTextHeight")) {
+      this.setARHeaderMinTextHeight(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderTextColorSelected")) {
+      this.setARHeaderTextColorSelected(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderTextColorNonSelected")) {
+      this.setARHeaderTextColorNonSelected(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderHorizontalTextMargin")) {
+      this.setARHeaderHorizontalTextMargin(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderVerticalTextMargin")) {
+      this.setARHeaderVerticalTextMargin(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderTextFormat")) {
+      this.setARHeaderTextFormat(args, callbackContext);
       return true;
     }
     if (action.equals("isFlashAvailable")) {
@@ -395,10 +483,6 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.getMaximumResultsCount(callbackContext);
       return true;
     }
-    if (action.equals("getDuplicatesDelayMs")) {
-      this.getDuplicatesDelayMs(callbackContext);
-      return true;
-    }
     if (action.equals("isBarcodeTypeEnabled")) {
       this.isBarcodeTypeEnabled(args, callbackContext);
       return true;
@@ -465,6 +549,86 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("isScanningIndicatorAlwaysVisible")) {
       this.isScanningIndicatorAlwaysVisible(callbackContext);
+      return true;
+    }
+    if (action.equals("getShowDuplicatesLocations")) {
+      this.getShowDuplicatesLocations(callbackContext);
+      return true;
+    }
+    if (action.equals("getARMode")) {
+      this.getARMode(callbackContext);
+      return true;
+    }
+    if (action.equals("getARResultDisappearanceDelayMs")) {
+      this.getARResultDisappearanceDelayMs(callbackContext);
+      return true;
+    }
+    if (action.equals("getARLocationTransitionSpeed")) {
+      this.getARLocationTransitionSpeed(callbackContext);
+      return true;
+    }
+    if (action.equals("getAROverlayRefresh")) {
+      this.getAROverlayRefresh(callbackContext);
+      return true;
+    }
+    if (action.equals("getARSelectedLocationColor")) {
+      this.getARSelectedLocationColor(callbackContext);
+      return true;
+    }
+    if (action.equals("getARNonSelectedLocationColor")) {
+      this.getARNonSelectedLocationColor(callbackContext);
+      return true;
+    }
+    if (action.equals("getARSelectedLocationLineWidth")) {
+      this.getARSelectedLocationLineWidth(callbackContext);
+      return true;
+    }
+    if (action.equals("getARNonSelectedLocationLineWidth")) {
+      this.getARNonSelectedLocationLineWidth(callbackContext);
+      return true;
+    }
+    if (action.equals("getARLocationType")) {
+      this.getARLocationType(callbackContext);
+      return true;
+    }
+    if (action.equals("isARDoubleTapToFreezeEnabled")) {
+      this.isARDoubleTapToFreezeEnabled(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderHeight")) {
+      this.getARHeaderHeight(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderShowMode")) {
+      this.getARHeaderShowMode(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderMaxTextHeight")) {
+      this.getARHeaderMaxTextHeight(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderMinTextHeight")) {
+      this.getARHeaderMinTextHeight(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderTextColorSelected")) {
+      this.getARHeaderTextColorSelected(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderTextColorNonSelected")) {
+      this.getARHeaderTextColorNonSelected(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderHorizontalTextMargin")) {
+      this.getARHeaderHorizontalTextMargin(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderVerticalTextMargin")) {
+      this.getARHeaderVerticalTextMargin(callbackContext);
+      return true;
+    }
+    if (action.equals("getARHeaderTextFormat")) {
+      this.getARHeaderTextFormat(callbackContext);
       return true;
     }
     return false;
@@ -572,6 +736,22 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void pauseScanning(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       barkoderView.pauseScanning();
+    });
+
+    callbackContext.success();
+  }
+
+  private void freezeScanning(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.freezeScanning();
+    });
+
+    callbackContext.success();
+  }
+
+  private void unfreezeScanning(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.unfreezeScanning();
     });
 
     callbackContext.success();
@@ -950,16 +1130,6 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     callbackContext.success();
   }
 
-  private void setDuplicatesDelayMs(JSONArray args, CallbackContext callbackContext) throws JSONException {
-    int duplicatesDelayMs = args.getInt(0);
-
-    this.cordova.getActivity().runOnUiThread(() -> {
-      barkoderView.config.getDecoderConfig().duplicatesDelayMs = duplicatesDelayMs;
-    });
-
-    callbackContext.success();
-  }
-
   private void setThresholdBetweenDuplicatesScans(JSONArray args, CallbackContext callbackContext) throws JSONException {
     int thresholdBetweenDuplicatesScans = args.getInt(0);
 
@@ -1048,6 +1218,26 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
         if (configAsJson.has("scanningIndicatorColor")) {
           String colorAsHex = configAsJson.getString("scanningIndicatorColor");
           configAsJson.put("scanningIndicatorColor", BarkoderUtil.hexColorToIntColor(colorAsHex));
+        }
+
+        if (configAsJson.has("selectedLocationColor")) {
+          String colorAsHex = configAsJson.getString("selectedLocationColor");
+          configAsJson.put("selectedLocationColor", BarkoderUtil.hexColorToIntColor(colorAsHex));
+        }
+
+        if (configAsJson.has("nonSelectedLocationColor")) {
+          String colorAsHex = configAsJson.getString("nonSelectedLocationColor");
+          configAsJson.put("nonSelectedLocationColor", BarkoderUtil.hexColorToIntColor(colorAsHex));
+        }
+
+        if (configAsJson.has("headerTextColorSelected")) {
+          String colorAsHex = configAsJson.getString("headerTextColorSelected");
+          configAsJson.put("headerTextColorSelected", BarkoderUtil.hexColorToIntColor(colorAsHex));
+        }
+
+        if (configAsJson.has("headerTextColorNonSelected")) {
+          String colorAsHex = configAsJson.getString("headerTextColorNonSelected");
+          configAsJson.put("headerTextColorNonSelected", BarkoderUtil.hexColorToIntColor(colorAsHex));
         }
 
         String convertedBarkoderConfigAsString = configAsJson.toString();
@@ -1211,6 +1401,186 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       BarkoderCameraPosition bkdCameraPosition = BarkoderCameraPosition.values()[index];
       barkoderView.setCamera(bkdCameraPosition);
 
+      callbackContext.success();
+    });
+  }
+
+  private void setShowDuplicatesLocations(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.setShowDuplicatesLocations(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARMode(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int index = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setARModeEnabled(BarkoderARMode.values()[index]);
+      callbackContext.success();
+    });
+  }
+
+  private void setARResultDisappearanceDelayMs(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int delay = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setResultDisappearanceDelayMs(delay);
+      callbackContext.success();
+    });
+  }
+
+  private void setARLocationTransitionSpeed(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float speed = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setLocationTransitionSpeed(speed);
+      callbackContext.success();
+    });
+  }
+
+  private void setAROverlayRefresh(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int index = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setOverlayRefresh(BarkoderAROverlayRefresh.values()[index]);
+      callbackContext.success();
+    });
+  }
+
+  private void setARSelectedLocationColor(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String hexColor = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setSelectedLocationColor(BarkoderUtil.hexColorToIntColor(hexColor));
+      callbackContext.success();
+    });
+  }
+
+  private void setARNonSelectedLocationColor(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String hexColor = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setNonSelectedLocationColor(BarkoderUtil.hexColorToIntColor(hexColor));
+      callbackContext.success();
+    });
+  }
+
+  private void setARSelectedLocationLineWidth(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float width = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setSelectedLocationLineWidth(width);
+      callbackContext.success();
+    });
+  }
+
+  private void setARNonSelectedLocationLineWidth(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float width = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setNonSelectedLocationLineWidth(width);
+      callbackContext.success();
+    });
+  }
+
+  private void setARLocationType(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int index = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setLocationType(BarkoderARLocationType.values()[index]);
+      callbackContext.success();
+    });
+  }
+
+  private void setARDoubleTapToFreezeEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setDoubleTapToFreezeEnabled(enabled);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderHeight(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float value = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderHeight(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderShowMode(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int index = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderShowMode(BarkoderARHeaderShowMode.values()[index]);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderMaxTextHeight(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float value = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderMaxTextHeight(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderMinTextHeight(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float value = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderMinTextHeight(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderTextColorSelected(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String hex = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderTextColorSelected(BarkoderUtil.hexColorToIntColor(hex));
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderTextColorNonSelected(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String hex = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderTextColorNonSelected(BarkoderUtil.hexColorToIntColor(hex));
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderHorizontalTextMargin(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float value = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderHorizontalTextMargin(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderVerticalTextMargin(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    float value = (float) args.getDouble(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderVerticalTextMargin(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARHeaderTextFormat(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String format = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setHeaderTextFormat(format);
       callbackContext.success();
     });
   }
@@ -1411,12 +1781,6 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
-  private void getDuplicatesDelayMs(CallbackContext callbackContext) {
-    this.cordova.getActivity().runOnUiThread(() -> {
-      callbackContext.success(barkoderView.config.getDecoderConfig().duplicatesDelayMs);
-    });
-  }
-
   private void isBarcodeTypeEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
     int barcodeTypeOrdinal = args.getInt(0);
 
@@ -1532,6 +1896,130 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void isScanningIndicatorAlwaysVisible(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.isScanningIndicatorAlwaysVisible()));
+    });
+  }
+
+  private void getShowDuplicatesLocations(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getShowDuplicatesLocations()));
+    });
+  }
+
+  private void getARMode(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getARMode().ordinal());
+    });
+  }
+
+  private void getARResultDisappearanceDelayMs(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getResultDisappearanceDelayMs());
+    });
+  }
+
+  private void getARLocationTransitionSpeed(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getLocationTransitionSpeed()));
+    });
+  }
+
+  private void getAROverlayRefresh(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getOverlayRefresh().ordinal());
+    });
+  }
+
+  private void getARSelectedLocationColor(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      String hex = String.format("#%08X", barkoderView.config.getArConfig().getSelectedLocationColor());
+      callbackContext.success(hex);
+    });
+  }
+
+  private void getARNonSelectedLocationColor(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      String hex = String.format("#%08X", barkoderView.config.getArConfig().getNonSelectedLocationColor());
+      callbackContext.success(hex);
+    });
+  }
+
+  private void getARSelectedLocationLineWidth(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getSelectedLocationLineWidth()));
+    });
+  }
+
+  private void getARNonSelectedLocationLineWidth(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getNonSelectedLocationLineWidth()));
+    });
+  }
+
+  private void getARLocationType(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getLocationType().ordinal());
+    });
+  }
+
+  private void isARDoubleTapToFreezeEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().isDoubleTapToFreezeEnabled()));
+    });
+  }
+
+  private void getARHeaderHeight(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getHeaderHeight()));
+    });
+  }
+
+  private void getARHeaderShowMode(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getHeaderShowMode().ordinal());
+    });
+  }
+
+  private void getARHeaderMaxTextHeight(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getHeaderMaxTextHeight()));
+    });
+  }
+
+  private void getARHeaderMinTextHeight(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getHeaderMinTextHeight()));
+    });
+  }
+
+  private void getARHeaderTextColorSelected(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      String hex = String.format("#%08X", barkoderView.config.getArConfig().getHeaderTextColorSelected());
+      callbackContext.success(hex);
+    });
+  }
+
+  private void getARHeaderTextColorNonSelected(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      String hex = String.format("#%08X", barkoderView.config.getArConfig().getHeaderTextColorNonSelected());
+      callbackContext.success(hex);
+    });
+  }
+
+  private void getARHeaderHorizontalTextMargin(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getHeaderHorizontalTextMargin()));
+    });
+  }
+
+  private void getARHeaderVerticalTextMargin(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getHeaderVerticalTextMargin()));
+    });
+  }
+
+  private void getARHeaderTextFormat(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getHeaderTextFormat());
     });
   }
 

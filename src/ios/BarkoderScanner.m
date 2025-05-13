@@ -16,6 +16,8 @@
 - (void)startScanning:(CDVInvokedUrlCommand*)command;
 - (void)stopScanning:(CDVInvokedUrlCommand*)command;
 - (void)pauseScanning:(CDVInvokedUrlCommand*)command;
+- (void)freezeScanning:(CDVInvokedUrlCommand*)command;
+- (void)unfreezeScanning:(CDVInvokedUrlCommand*)command;
 - (void)scanImage:(CDVInvokedUrlCommand*)command;
 - (void)setLocationLineColor:(CDVInvokedUrlCommand*)command;
 - (void)setLocationLineWidth:(CDVInvokedUrlCommand*)command;
@@ -46,7 +48,6 @@
 - (void)setMulticodeCachingDuration:(CDVInvokedUrlCommand*)command;
 - (void)setMaximumResultsCount:(CDVInvokedUrlCommand*)command;
 - (void)setBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand*)command;
-- (void)setDuplicatesDelayMs:(CDVInvokedUrlCommand*)command;
 - (void)setThresholdBetweenDuplicatesScans:(CDVInvokedUrlCommand*)command;
 - (void)setUpcEanDeblurEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setMisshaped1DEnabled:(CDVInvokedUrlCommand*)command;
@@ -68,6 +69,26 @@
 - (void)setEnableComposite:(CDVInvokedUrlCommand *)command;
 - (void)setVideoStabilization:(CDVInvokedUrlCommand *)command;
 - (void)setCamera:(CDVInvokedUrlCommand *)command;
+- (void)setShowDuplicatesLocations:(CDVInvokedUrlCommand *)command;
+- (void)setARMode:(CDVInvokedUrlCommand *)command;
+- (void)setARResultDisappearanceDelayMs:(CDVInvokedUrlCommand *)command;
+- (void)setARLocationTransitionSpeed:(CDVInvokedUrlCommand *)command;
+- (void)setAROverlayRefresh:(CDVInvokedUrlCommand *)command;
+- (void)setARSelectedLocationColor:(CDVInvokedUrlCommand *)command;
+- (void)setARNonSelectedLocationColor:(CDVInvokedUrlCommand *)command;
+- (void)setARSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command;
+- (void)setARNonSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command;
+- (void)setARLocationType:(CDVInvokedUrlCommand *)command;
+- (void)setARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderHeight:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderShowMode:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderMinTextHeight:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderTextColorSelected:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderTextColorNonSelected:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command;
+- (void)setARHeaderTextFormat:(CDVInvokedUrlCommand *)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -95,7 +116,6 @@
 - (void)getFormattingType:(CDVInvokedUrlCommand*)command;
 - (void)getThreadsLimit:(CDVInvokedUrlCommand*)command;
 - (void)getMaximumResultsCount:(CDVInvokedUrlCommand*)command;
-- (void)getDuplicatesDelayMs:(CDVInvokedUrlCommand*)command;
 - (void)isBarcodeTypeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getMulticodeCachingEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getMulticodeCachingDuration:(CDVInvokedUrlCommand*)command;
@@ -113,7 +133,26 @@
 - (void)getScanningIndicatorWidth:(CDVInvokedUrlCommand *)command;
 - (void)getScanningIndicatorAnimation:(CDVInvokedUrlCommand *)command;
 - (void)isScanningIndicatorAlwaysVisible:(CDVInvokedUrlCommand *)command;
-
+- (void)getShowDuplicatesLocations:(CDVInvokedUrlCommand *)command;
+- (void)getARMode:(CDVInvokedUrlCommand *)command;
+- (void)getARResultDisappearanceDelayMs:(CDVInvokedUrlCommand *)command;
+- (void)getARLocationTransitionSpeed:(CDVInvokedUrlCommand *)command;
+- (void)getAROverlayRefresh:(CDVInvokedUrlCommand *)command;
+- (void)getARSelectedLocationColor:(CDVInvokedUrlCommand *)command;
+- (void)getARNonSelectedLocationColor:(CDVInvokedUrlCommand *)command;
+- (void)getARSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command;
+- (void)getARNonSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command;
+- (void)getARLocationType:(CDVInvokedUrlCommand *)command;
+- (void)isARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderHeight:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderShowMode:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderMinTextHeight:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderTextColorSelected:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderTextColorNonSelected:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command;
+- (void)getARHeaderTextFormat:(CDVInvokedUrlCommand *)command;
 
 
 // Enum to represent different Barkoder error types
@@ -267,6 +306,18 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)pauseScanning:(CDVInvokedUrlCommand*)command {
     [barkoderView pauseScanning];
+    
+    [self callbackSuccess:command];
+}
+
+- (void)freezeScanning:(CDVInvokedUrlCommand*)command {
+    [barkoderView freezeScanning];
+    
+    [self callbackSuccess:command];
+}
+
+- (void)unfreezeScanning:(CDVInvokedUrlCommand*)command {
+    [barkoderView unfreezeScanning];
     
     [self callbackSuccess:command];
 }
@@ -726,14 +777,6 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
-- (void)setDuplicatesDelayMs:(CDVInvokedUrlCommand *)command {
-    int index = [[command.arguments objectAtIndex:0] intValue];
-    
-    barkoderView.config.decoderConfig.duplicatesDelayMs = index;
-    
-    [self callbackSuccess:command];
-}
-
 - (void)setThresholdBetweenDuplicatesScans:(CDVInvokedUrlCommand *)command {
     int thresholdBetweenDuplicatesScans = [[command.arguments objectAtIndex:0] intValue];
     
@@ -817,6 +860,26 @@ CDVPluginResult* pluginResult = nil;
         NSString *colorHexCodeScanningIndicatorColor = barkoderConfigAsDictionary[@"scanningIndicatorColor"];
         if (colorHexCodeScanningIndicatorColor) {
             barkoderConfigAsDictionary[@"scanningIndicatorColor"] = [self parseColor:colorHexCodeScanningIndicatorColor];
+        }
+      
+        NSString *colorHexCodeSelectedLocationColor = barkoderConfigAsDictionary[@"selectedLocationColor"];
+        if (colorHexCodeSelectedLocationColor) {
+            barkoderConfigAsDictionary[@"selectedLocationColor"] = [self parseColor:colorHexCodeSelectedLocationColor];
+        }
+
+        NSString *colorHexCodeNonSelectedLocationColor = barkoderConfigAsDictionary[@"nonSelectedLocationColor"];
+        if (colorHexCodeNonSelectedLocationColor) {
+            barkoderConfigAsDictionary[@"nonSelectedLocationColor"] = [self parseColor:colorHexCodeNonSelectedLocationColor];
+        }
+
+        NSString *colorHexCodeHeaderTextColorSelected = barkoderConfigAsDictionary[@"headerTextColorSelected"];
+        if (colorHexCodeHeaderTextColorSelected) {
+            barkoderConfigAsDictionary[@"headerTextColorSelected"] = [self parseColor:colorHexCodeHeaderTextColorSelected];
+        }
+
+        NSString *colorHexCodeHeaderTextColorNonSelected = barkoderConfigAsDictionary[@"headerTextColorNonSelected"];
+        if (colorHexCodeHeaderTextColorNonSelected) {
+            barkoderConfigAsDictionary[@"headerTextColorNonSelected"] = [self parseColor:colorHexCodeHeaderTextColorNonSelected];
         }
         
         NSError *error = nil;
@@ -967,6 +1030,146 @@ CDVPluginResult* pluginResult = nil;
   }
 }
 
+- (void)setShowDuplicatesLocations:(CDVInvokedUrlCommand *)command {
+    BOOL value = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.showDuplicatesLocations = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARMode:(CDVInvokedUrlCommand *)command {
+    int value = [[command.arguments objectAtIndex:0] intValue];
+    
+    if (value < BarkoderARModeOff || value > BarkoderARModeNonInteractive) {
+        return;
+    }
+    
+    barkoderView.config.arConfig.arMode = (BarkoderARMode)value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARResultDisappearanceDelayMs:(CDVInvokedUrlCommand *)command {
+    int value = [[command.arguments objectAtIndex:0] intValue];
+    barkoderView.config.arConfig.resultDisappearanceDelayMs = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARLocationTransitionSpeed:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.locationTransitionSpeed = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setAROverlayRefresh:(CDVInvokedUrlCommand *)command {
+    int value = [[command.arguments objectAtIndex:0] intValue];
+    
+    if (value < BarkoderAROverlayRefreshSmooth || value > BarkoderAROverlayRefreshNormal) {
+        return;
+    }
+
+    barkoderView.config.arConfig.overlayRefresh = (BarkoderAROverlayRefresh)value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARSelectedLocationColor:(CDVInvokedUrlCommand *)command {
+    NSString *hex = [command.arguments objectAtIndex:0];
+    barkoderView.config.arConfig.selectedLocationColor = [self colorWithHexString:hex command:command];
+    [self callbackSuccess:command];
+}
+
+- (void)setARNonSelectedLocationColor:(CDVInvokedUrlCommand *)command {
+    NSString *hex = [command.arguments objectAtIndex:0];
+    barkoderView.config.arConfig.nonSelectedLocationColor = [self colorWithHexString:hex command:command];
+    [self callbackSuccess:command];
+}
+
+- (void)setARSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.selectedLocationLineWidth = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARNonSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.nonSelectedLocationLineWidth = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARLocationType:(CDVInvokedUrlCommand *)command {
+    int value = [[command.arguments objectAtIndex:0] intValue];
+    
+    if (value < BarkoderARLocationTypeNone || value > BarkoderARLocationTypeBoundingBox) {
+        return;
+    }
+
+    barkoderView.config.arConfig.locationType = (BarkoderARLocationType)value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.doubleTapToFreezeEnabled = enabled;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderHeight:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.headerHeight = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderShowMode:(CDVInvokedUrlCommand *)command {
+    int value = [[command.arguments objectAtIndex:0] intValue];
+    
+    if (value < BarkoderARHeaderShowModeNever || value > BarkoderARHeaderShowModeOnSelected) {
+        return;
+    }
+
+    barkoderView.config.arConfig.headerShowMode = (BarkoderARHeaderShowMode)value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.headerMaxTextHeight = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderMinTextHeight:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.headerMinTextHeight = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderTextColorSelected:(CDVInvokedUrlCommand *)command {
+    NSString *hex = [command.arguments objectAtIndex:0];
+    barkoderView.config.arConfig.headerTextColorSelected = [self colorWithHexString:hex command:command];
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderTextColorNonSelected:(CDVInvokedUrlCommand *)command {
+    NSString *hex = [command.arguments objectAtIndex:0];
+    barkoderView.config.arConfig.headerTextColorNonSelected = [self colorWithHexString:hex command:command];
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.headerHorizontalTextMargin = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command {
+    float value = [[command.arguments objectAtIndex:0] floatValue];
+    barkoderView.config.arConfig.headerVerticalTextMargin = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARHeaderTextFormat:(CDVInvokedUrlCommand *)command {
+    NSString *value = [command.arguments objectAtIndex:0];
+    barkoderView.config.arConfig.headerTextFormat = value;
+    [self callbackSuccess:command];
+}
+
 // MARK: - Getters
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand *)command {
@@ -1111,10 +1314,6 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)getMaximumResultsCount:(CDVInvokedUrlCommand *)command {
     [self callbackSuccessInt:command value:barkoderView.config.decoderConfig.maximumResultsCount];
-}
-
-- (void)getDuplicatesDelayMs:(CDVInvokedUrlCommand *)command {
-    [self callbackSuccessInt:command value:barkoderView.config.decoderConfig.duplicatesDelayMs];
 }
 
 - (void)isBarcodeTypeEnabled:(CDVInvokedUrlCommand *)command {
@@ -1318,6 +1517,86 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)isScanningIndicatorAlwaysVisible:(CDVInvokedUrlCommand *)command {
   [self callbackSuccessBoolean:command boolean:[barkoderView.config scanningIndicatorAlwaysVisible]];
+}
+
+- (void)getShowDuplicatesLocations:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config showDuplicatesLocations]];
+}
+
+- (void)getARMode:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config.arConfig arMode]];
+}
+
+- (void)getARResultDisappearanceDelayMs:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config.arConfig resultDisappearanceDelayMs]];
+}
+
+- (void)getARLocationTransitionSpeed:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig locationTransitionSpeed]];
+}
+
+- (void)getAROverlayRefresh:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config.arConfig overlayRefresh]];
+}
+
+- (void)getARSelectedLocationColor:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessMessage:command message:[self colorToHex:[barkoderView.config.arConfig selectedLocationColor]]];
+}
+
+- (void)getARNonSelectedLocationColor:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessMessage:command message:[self colorToHex:[barkoderView.config.arConfig nonSelectedLocationColor]]];
+}
+
+- (void)getARSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig selectedLocationLineWidth]];
+}
+
+- (void)getARNonSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig nonSelectedLocationLineWidth]];
+}
+
+- (void)getARLocationType:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config.arConfig locationType]];
+}
+
+- (void)isARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig doubleTapToFreezeEnabled]];
+}
+
+- (void)getARHeaderHeight:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig headerHeight]];
+}
+
+- (void)getARHeaderShowMode:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config.arConfig headerShowMode]];
+}
+
+- (void)getARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig headerMaxTextHeight]];
+}
+
+- (void)getARHeaderMinTextHeight:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig headerMinTextHeight]];
+}
+
+- (void)getARHeaderTextColorSelected:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessMessage:command message:[self colorToHex:[barkoderView.config.arConfig headerTextColorSelected]]];
+}
+
+- (void)getARHeaderTextColorNonSelected:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessMessage:command message:[self colorToHex:[barkoderView.config.arConfig headerTextColorNonSelected]]];
+}
+
+- (void)getARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig headerHorizontalTextMargin]];
+}
+
+- (void)getARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView.config.arConfig headerVerticalTextMargin]];
+}
+
+- (void)getARHeaderTextFormat:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessMessage:command message:[barkoderView.config.arConfig headerTextFormat]];
 }
 
 

@@ -79,6 +79,26 @@ exports.pauseScanning = function (success, error) {
 };
 
 /**
+ * Freezes the current AR scanning session by capturing a still image from the camera feed.
+ * Use only when AR mode is enabled to temporarily freeze the view while keeping overlays visible.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.freezeScanning = function (success, error) {
+  exec(success, error, barkoderScanner, "freezeScanning", []);
+};
+
+/**
+ * Unfreezes the AR scanning session by removing the still image and reactivating the camera and overlays.
+ * Use only when AR mode is enabled to restore the live AR view and continue scanning.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.unfreezeScanning = function (success, error) {
+  exec(success, error, barkoderScanner, "unfreezeScanning", []);
+};
+
+/**
  * Scan barcodes from base64 string image
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
@@ -421,16 +441,6 @@ exports.setBarcodeThumbnailOnResultEnabled = function (enabled, success, error) 
 };
 
 /**
- * Sets the delay in milliseconds for considering duplicate barcodes during scanning
- * @param {*} delayMs - The delay in milliseconds between duplicate scans
- * @param {*} success - The callback function to be invoked on successful execution
- * @param {*} error - The callback function to be invoked on execution error
- */
-exports.setDuplicatesDelayMs = function (delayMs, success, error) {
-  exec(success, error, barkoderScanner, "setDuplicatesDelayMs", [delayMs]);
-};
-
-/**
  * Sets the threshold between duplicate scans
  * @param {*} thresholdBetweenDuplicatesScans - The threshold between duplicate scans
  * @param {*} success - The callback function to be invoked on successful execution
@@ -661,6 +671,206 @@ exports.setCamera = function (value, success, error) {
   exec(success, error, barkoderScanner, "setCamera", [value]);
 };
 
+/**
+ * Enables or disables showing duplicate barcode locations on the preview overlay.
+ * @param {*} value - A boolean indicating whether to show duplicate locations.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setShowDuplicatesLocations = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setShowDuplicatesLocations", [value]);
+};
+
+/**
+ * Sets the AR mode used for barcode scanning visualization.
+ * @param {*} value - The AR mode (e.g., interactive, non-interactive, off)
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARMode = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARMode", [value]);
+};
+
+/**
+ * Sets the delay after which a detected AR result is considered expired.
+ * @param {*} value - Delay in milliseconds.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARResultDisappearanceDelayMs = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARResultDisappearanceDelayMs", [value]);
+};
+
+/**
+ * Sets the speed of overlay transition for AR barcode locations.
+ * @param {*} value - Transition speed value.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARLocationTransitionSpeed = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARLocationTransitionSpeed", [value]);
+};
+
+/**
+ * Sets the refresh mode for the AR overlay.
+ * @param {*} value - Refresh mode value.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setAROverlayRefresh = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setAROverlayRefresh", [value]);
+};
+
+/**
+ * Sets the overlay color for selected barcodes in AR mode.
+ * @param {*} value - Hex color code.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARSelectedLocationColor = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARSelectedLocationColor", [value]);
+};
+
+/**
+ * Sets the overlay color for non-selected barcodes in AR mode.
+ * @param {*} value - Hex color code.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARNonSelectedLocationColor = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARNonSelectedLocationColor", [value]);
+};
+
+/**
+ * Sets line width for selected barcode overlay.
+ * @param {*} value - Width in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARSelectedLocationLineWidth = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARSelectedLocationLineWidth", [value]);
+};
+
+/**
+ * Sets line width for non-selected barcode overlay.
+ * @param {*} value - Width in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARNonSelectedLocationLineWidth = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARNonSelectedLocationLineWidth", [value]);
+};
+
+/**
+ * Sets AR location style (tight, bounding box, none).
+ * @param {*} value - Location type.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARLocationType = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARLocationType", [value]);
+};
+
+/**
+ * Enables or disables double-tap to freeze scanning in AR mode.
+ * @param {*} enabled - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARDoubleTapToFreezeEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setARDoubleTapToFreezeEnabled", [enabled]);
+};
+
+/**
+ * Sets height of header label above barcode in AR mode.
+ * @param {*} value - Height in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderHeight = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderHeight", [value]);
+};
+
+/**
+ * Sets header visibility condition (always, on selected, never).
+ * @param {*} value - Show mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderShowMode = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderShowMode", [value]);
+};
+
+/**
+ * Sets max text height for AR header.
+ * @param {*} value - Max height in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderMaxTextHeight = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderMaxTextHeight", [value]);
+};
+
+/**
+ * Sets min text height for AR header.
+ * @param {*} value - Min height in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderMinTextHeight = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderMinTextHeight", [value]);
+};
+
+/**
+ * Sets text color for selected barcode header.
+ * @param {*} value - Hex color code.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderTextColorSelected = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderTextColorSelected", [value]);
+};
+
+/**
+ * Sets text color for non-selected barcode header.
+ * @param {*} value - Hex color code.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderTextColorNonSelected = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderTextColorNonSelected", [value]);
+};
+
+/**
+ * Sets the horizontal margin applied to the header text in AR mode, creating equal padding on both sides.
+ * @param {*} value - Margin in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderHorizontalTextMargin = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderHorizontalTextMargin", [value]);
+};
+
+/**
+ * Sets the vertical margin applied to the header text in AR mode, creating equal padding on both sides.
+ * @param {*} value - Margin in pixels.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderVerticalTextMargin = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderVerticalTextMargin", [value]);
+};
+
+/**
+ * Sets AR header text format using placeholders.
+ * @param {*} value - Format string (e.g. [barcode_text]).
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARHeaderTextFormat = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARHeaderTextFormat", [value]);
+};
+
 // - Getters
 
 /**
@@ -889,15 +1099,6 @@ exports.getMaximumResultsCount = function (success, error) {
 };
 
 /**
- * Retrieves the delay in milliseconds for considering duplicate barcodes during scanning
- * @param {*} success - The callback function to be invoked on successful execution
- * @param {*} error - The callback function to be invoked on execution error
- */
-exports.getDuplicatesDelayMs = function (success, error) {
-  exec(success, error, barkoderScanner, "getDuplicatesDelayMs", []);
-};
-
-/**
  * Checks if a specific barcode type is enabled
  * @param {*} type - The barcode type to check
  * @param {*} success - The callback function to be invoked on successful execution
@@ -1061,4 +1262,184 @@ exports.getScanningIndicatorAnimation = function (success, error) {
  */
 exports.isScanningIndicatorAlwaysVisible = function (success, error) {
   exec(success, error, barkoderScanner, "isScanningIndicatorAlwaysVisible", []);
+};
+
+/**
+ * Retrieves whether showing duplicate barcode locations in the AR view is enabled.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getShowDuplicatesLocations = function (success, error) {
+  exec(success, error, barkoderScanner, "getShowDuplicatesLocations", []);
+};
+
+/**
+ *  Retrieves the current AR mode used for barcode scanning.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARMode = function (success, error) {
+  exec(success, error, barkoderScanner, "getARMode", []);
+};
+
+/**
+ * Retrieves the delay after which AR results disappear once detected.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARResultDisappearanceDelayMs = function (success, error) {
+  exec(success, error, barkoderScanner, "getARResultDisappearanceDelayMs", []);
+};
+
+/**
+ * Retrieves the transition speed for AR barcode location overlays.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARLocationTransitionSpeed = function (success, error) {
+  exec(success, error, barkoderScanner, "getARLocationTransitionSpeed", []);
+};
+
+/**
+ * Retrieves the AR overlay refresh mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getAROverlayRefresh = function (success, error) {
+  exec(success, error, barkoderScanner, "getAROverlayRefresh", []);
+};
+
+/**
+ * Retrieves the color used for selected barcode overlays in AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARSelectedLocationColor = function (success, error) {
+  exec(success, error, barkoderScanner, "getARSelectedLocationColor", []);
+};
+
+/**
+ * Retrieves the color used for non-selected barcode overlays in AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARNonSelectedLocationColor = function (success, error) {
+  exec(success, error, barkoderScanner, "getARNonSelectedLocationColor", []);
+};
+
+/**
+ * Retrieves the line width for selected barcode overlays in AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARSelectedLocationLineWidth = function (success, error) {
+  exec(success, error, barkoderScanner, "getARSelectedLocationLineWidth", []);
+};
+
+/**
+ * Retrieves the line width for non-selected barcode overlays in AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARNonSelectedLocationLineWidth = function (success, error) {
+  exec(success, error, barkoderScanner, "getARNonSelectedLocationLineWidth", []);
+};
+
+/**
+ * Retrieves the style of AR location overlays (tight, bounding box, none).
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARLocationType = function (success, error) {
+  exec(success, error, barkoderScanner, "getARLocationType", []);
+};
+
+/**
+ * Checks whether double-tap to freeze is enabled in AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.isARDoubleTapToFreezeEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isARDoubleTapToFreezeEnabled", []);
+};
+
+/**
+ * Retrieves the header height above barcode in AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderHeight = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderHeight", []);
+};
+
+/**
+ * Retrieves the header display mode (always, on selected, never).
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderShowMode = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderShowMode", []);
+};
+
+/**
+ * Retrieves the maximum text height for AR headers.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderMaxTextHeight = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderMaxTextHeight", []);
+};
+
+/**
+ * Retrieves the minimum text height for AR headers.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderMinTextHeight = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderMinTextHeight", []);
+};
+
+/**
+ * Retrieves the header text color for selected barcodes.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderTextColorSelected = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderTextColorSelected", []);
+};
+
+/**
+ * Retrieves the header text color for non-selected barcodes.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderTextColorNonSelected = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderTextColorNonSelected", []);
+};
+
+/**
+ * Retrieves the horizontal margin for AR header text.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderHorizontalTextMargin = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderHorizontalTextMargin", []);
+};
+
+/**
+ * Retrieves the vertical margin for AR header text.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderVerticalTextMargin = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderVerticalTextMargin", []);
+};
+
+/**
+ * Retrieves the format string used for AR header text.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARHeaderTextFormat = function (success, error) {
+  exec(success, error, barkoderScanner, "getARHeaderTextFormat", []);
 };

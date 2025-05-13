@@ -87,6 +87,30 @@ export enum BarcodeType {
   japanesePost
 }
 
+export enum BarkoderARMode {
+  off,
+  interactiveDisabled,
+  interactiveEnabled,
+  nonInteractive
+}
+  
+export enum BarkoderAROverlayRefresh {
+  smooth,
+  normal
+}
+  
+export enum BarkoderARLocationType {
+  none,
+  tight,
+  boundingBox
+}
+  
+export enum BarkoderARHeaderShowMode {
+  never,
+  always,
+  onSelected
+}
+
 export class BarkoderConfig {
   locationLineColor?: string;
   locationLineWidth?: number;
@@ -107,6 +131,7 @@ export class BarkoderConfig {
   beepOnSuccessEnabled?: boolean;
   vibrateOnSuccessEnabled?: boolean;
   decoder?: DekoderConfig;
+  arConfig?: BarkoderARConfig;
 
   constructor(config: Partial<BarkoderConfig>) {
     Object.assign(this, config);
@@ -157,6 +182,32 @@ export class DekoderConfig {
   general?: GeneralSettings;
 
   constructor(config: Partial<DekoderConfig>) {
+    Object.assign(this, config);
+  }
+}
+
+export class BarkoderARConfig {
+  arMode?: BarkoderARMode;
+  resultDisappearanceDelayMs?: number;
+  locationTransitionSpeed?: number;
+  overlayRefresh?: BarkoderAROverlayRefresh;
+  selectedLocationColor?: string;
+  nonSelectedLocationColor?: string;
+  selectedLocationLineWidth?: number;
+  nonSelectedLocationLineWidth?: number;
+  locationType?: BarkoderARLocationType;
+  doubleTapToFreezeEnabled?: boolean;
+  headerHeight?: number;
+  headerShowMode?: BarkoderARHeaderShowMode;
+  headerMaxTextHeight?: number;
+  headerMinTextHeight?: number;
+  headerTextColorSelected?: string;
+  headerTextColorNonSelected?: string;
+  headerHorizontalTextMargin?: number;
+  headerVerticalTextMargin?: number;
+  headerTextFormat?: string;
+  
+  constructor(config: Partial<BarkoderARConfig>) {
     Object.assign(this, config);
   }
 }
@@ -272,7 +323,6 @@ export class GeneralSettings {
   formattingType?: FormattingType;
   encodingCharacterSet?: string;
   maximumResultsCount?: number;
-  duplicatesDelayMs?: number;
   multicodeCachingDuration?: number;
   multicodeCachingEnabled?: boolean;
   upcEanDeblur?: number;
