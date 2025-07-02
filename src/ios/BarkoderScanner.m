@@ -80,6 +80,8 @@
 - (void)setARNonSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command;
 - (void)setARLocationType:(CDVInvokedUrlCommand *)command;
 - (void)setARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command;
+- (void)setARImageResultEnabled:(CDVInvokedUrlCommand *)command;
+- (void)setARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderHeight:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderShowMode:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command;
@@ -100,10 +102,12 @@
 - (void)isBeepOnSuccessEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isVibrateOnSuccessEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getVersion:(CDVInvokedUrlCommand*)command;
+- (void)getLibVersion:(CDVInvokedUrlCommand*)command;
 - (void)getLocationLineColorHex:(CDVInvokedUrlCommand*)command;
 - (void)getRoiLineColorHex:(CDVInvokedUrlCommand*)command;
 - (void)getRoiOverlayBackgroundColorHex:(CDVInvokedUrlCommand*)command;
 - (void)getMaxZoomFactor:(CDVInvokedUrlCommand*)command;
+- (void)getCurrentZoomFactor:(CDVInvokedUrlCommand *)command;
 - (void)getLocationLineWidth:(CDVInvokedUrlCommand*)command;
 - (void)getRoiLineWidth:(CDVInvokedUrlCommand*)command;
 - (void)getRegionOfInterest:(CDVInvokedUrlCommand*)command;
@@ -144,6 +148,8 @@
 - (void)getARNonSelectedLocationLineWidth:(CDVInvokedUrlCommand *)command;
 - (void)getARLocationType:(CDVInvokedUrlCommand *)command;
 - (void)isARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command;
+- (void)isARImageResultEnabled:(CDVInvokedUrlCommand *)command;
+- (void)isARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderHeight:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderShowMode:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command;
@@ -737,6 +743,8 @@ CDVPluginResult* pluginResult = nil;
             break;
         case JapanesePost:
             decoderConfig.japanesePost.enabled = enabled;
+        case MaxiCode:
+            decoderConfig.maxiCode.enabled = enabled;
             break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
@@ -893,7 +901,7 @@ CDVPluginResult* pluginResult = nil;
             @"pdf417", @"pdf417Micro", @"datamatrix",@"code25", @"interleaved25", @"itf14",
             @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode",
             @"idDocument", @"databar14", @"databarLimited", @"databarExpanded",
-            @"postalIMB", @"postnet", @"planet", @"australianPost", @"royalMail", @"kix", @"japanesePost",
+            @"postalIMB", @"postnet", @"planet", @"australianPost", @"royalMail", @"kix", @"japanesePost", @"maxiCode",
             @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"
         ];
         NSArray *values = @[
@@ -902,7 +910,7 @@ CDVPluginResult* pluginResult = nil;
             @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14",
             @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode",
             @"ID Document", @"Databar 14", @"Databar Limited", @"Databar Expanded",
-            @"Postal IMB", @"Postnet", @"Planet", @"Australian Post", @"Royal Mail", @"KIX", @"Japanese Post",
+            @"Postal IMB", @"Postnet", @"Planet", @"Australian Post", @"Royal Mail", @"KIX", @"Japanese Post", @"MaxiCode",
             @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"
         ];
         
@@ -1111,6 +1119,18 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setARImageResultEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.imageResultEnabled = enabled;
+    [self callbackSuccess:command];
+}
+
+- (void)setARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.barcodeThumbnailOnResult = enabled;
+    [self callbackSuccess:command];
+}
+
 - (void)setARHeaderHeight:(CDVInvokedUrlCommand *)command {
     float value = [[command.arguments objectAtIndex:0] floatValue];
     barkoderView.config.arConfig.headerHeight = value;
@@ -1214,6 +1234,10 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccessMessage:command message:[iBarkoder GetVersion]];
 }
 
+- (void)getLibVersion:(CDVInvokedUrlCommand*)command {
+    [self callbackSuccessMessage:command message:[iBarkoder GetLibVersion]];
+}
+
 - (void)getLocationLineColorHex:(CDVInvokedUrlCommand *)command {
     [self callbackSuccessMessage:command message:[self colorToHex:[barkoderView.config locationLineColor]]];
 }
@@ -1234,6 +1258,10 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)getLocationLineWidth:(CDVInvokedUrlCommand *)command {
     [self callbackSuccessDouble:command value:[barkoderView.config locationLineWidth]];
+}
+
+- (void)getCurrentZoomFactor:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessDouble:command value:[barkoderView getCurrentZoomFactor]];
 }
 
 - (void)getRoiLineWidth:(CDVInvokedUrlCommand *)command {
@@ -1445,6 +1473,8 @@ CDVPluginResult* pluginResult = nil;
             break;
         case JapanesePost:
             [self callbackSuccessBoolean:command boolean:decoderConfig.japanesePost.enabled];
+        case MaxiCode:
+            [self callbackSuccessBoolean:command boolean:decoderConfig.maxiCode.enabled];
             break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
@@ -1561,6 +1591,14 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)isARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command {
     [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig doubleTapToFreezeEnabled]];
+}
+
+- (void)isARImageResultEnabled:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig imageResultEnabled]];
+}
+
+- (void)isARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig barcodeThumbnailOnResult]];
 }
 
 - (void)getARHeaderHeight:(CDVInvokedUrlCommand *)command {

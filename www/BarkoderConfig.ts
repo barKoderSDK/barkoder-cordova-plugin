@@ -84,7 +84,8 @@ export enum BarcodeType {
   australianPost,
   royalMail,
   kix,
-  japanesePost
+  japanesePost,
+  maxiCode
 }
 
 export enum BarkoderARMode {
@@ -179,6 +180,7 @@ export class DekoderConfig {
   royalMail?: BarcodeConfig;
   kix?: BarcodeConfig;
   japanesePost?: BarcodeConfig;
+  maxiCode?: BarcodeConfig;
   general?: GeneralSettings;
 
   constructor(config: Partial<DekoderConfig>) {
@@ -197,6 +199,8 @@ export class BarkoderARConfig {
   nonSelectedLocationLineWidth?: number;
   locationType?: BarkoderARLocationType;
   doubleTapToFreezeEnabled?: boolean;
+  imageResultEnabled?: boolean;
+  barcodeThumbnailOnResult?: boolean;
   headerHeight?: number;
   headerShowMode?: BarkoderARHeaderShowMode;
   headerMaxTextHeight?: number;

@@ -347,6 +347,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setARHeaderHeight(args, callbackContext);
       return true;
     }
+    if (action.equals("setARImageResultEnabled")) {
+      this.setARImageResultEnabled(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARBarcodeThumbnailOnResultEnabled")) {
+      this.setARBarcodeThumbnailOnResultEnabled(args, callbackContext);
+      return true;
+    }
     if (action.equals("setARHeaderShowMode")) {
       this.setARHeaderShowMode(args, callbackContext);
       return true;
@@ -419,6 +427,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.getVersion(callbackContext);
       return true;
     }
+    if (action.equals("getLibVersion")) {
+      this.getLibVersion(callbackContext);
+      return true;
+    }
     if (action.equals("getLocationLineColorHex")) {
       this.getLocationLineColorHex(callbackContext);
       return true;
@@ -433,6 +445,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("getMaxZoomFactor")) {
       this.getMaxZoomFactor(callbackContext);
+      return true;
+    }
+    if (action.equals("getCurrentZoomFactor")) {
+      this.getCurrentZoomFactor(callbackContext);
       return true;
     }
     if (action.equals("getLocationLineWidth")) {
@@ -593,6 +609,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("isARDoubleTapToFreezeEnabled")) {
       this.isARDoubleTapToFreezeEnabled(callbackContext);
+      return true;
+    }
+    if (action.equals("isARImageResultEnabled")) {
+      this.isARImageResultEnabled(callbackContext);
+      return true;
+    }
+    if (action.equals("isARBarcodeThumbnailOnResultEnabled")) {
+      this.isARBarcodeThumbnailOnResultEnabled(callbackContext);
       return true;
     }
     if (action.equals("getARHeaderHeight")) {
@@ -1248,7 +1272,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
             "pdf417", "pdf417Micro", "datamatrix", "code25", "interleaved25", "itf14",
             "iata25", "matrix25", "datalogic25", "coop25", "code32", "telepen", "dotcode",
             "idDocument", "databar14", "databarLimited", "databarExpanded",
-            "postalIMB", "postnet", "planet", "australianPost", "royalMail", "kix", "japanesePost",
+            "postalIMB", "postnet", "planet", "australianPost", "royalMail", "kix", "japanesePost", "maxiCode",
             "minLength", "maxLength", "threadsLimit", "roiX", "roiY", "roiWidth", "roiHeight"
         };
 
@@ -1258,7 +1282,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
             "PDF 417", "PDF 417 Micro", "Datamatrix", "Code 25", "Interleaved 2 of 5", "ITF 14",
             "IATA 25", "Matrix 25", "Datalogic 25", "COOP 25", "Code 32", "Telepen", "Dotcode",
             "ID Document", "Databar 14", "Databar Limited", "Databar Expanded",
-            "Postal IMB", "Postnet", "Planet", "Australian Post", "Royal Mail", "KIX", "Japanese Post",
+            "Postal IMB", "Postnet", "Planet", "Australian Post", "Royal Mail", "KIX", "Japanese Post", "MaxiCode",
             "minimumLength", "maximumLength", "maxThreads", "roi_x", "roi_y", "roi_w", "roi_h"
         };
 
@@ -1504,6 +1528,24 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void setARImageResultEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setImageResultEnabled(enabled);
+      callbackContext.success();
+    });
+  }
+
+  private void setARBarcodeThumbnailOnResultEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setBarcodeThumbnailOnResultEnabled(enabled);
+      callbackContext.success();
+    });
+  }
+
   private void setARHeaderHeight(JSONArray args, CallbackContext callbackContext) throws JSONException {
     float value = (float) args.getDouble(0);
 
@@ -1647,6 +1689,12 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void getLibVersion(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(Barkoder.GetLibVersion());
+    });
+  }
+
   private void getLocationLineColorHex(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       String hexColor = String.format("#%08X", barkoderView.config.getLocationLineColor());
@@ -1671,6 +1719,12 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void getMaxZoomFactor(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       barkoderView.getMaxZoomFactor(value -> callbackContext.success(String.valueOf(value)));
+    });
+  }
+
+  private void getCurrentZoomFactor(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.getCurrentZoomFactor()));
     });
   }
 
@@ -1964,6 +2018,18 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void isARDoubleTapToFreezeEnabled(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.getArConfig().isDoubleTapToFreezeEnabled()));
+    });
+  }
+
+  private void isARImageResultEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().isImageResultEnabled()));
+    });
+  }
+
+  private void isARBarcodeThumbnailOnResultEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().isBarcodeThumbnailOnResultEnabled()));
     });
   }
 

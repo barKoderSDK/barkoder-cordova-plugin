@@ -782,6 +782,26 @@ exports.setARDoubleTapToFreezeEnabled = function (enabled, success, error) {
 };
 
 /**
+ * Enables or disables the capturing and processing of image data when a barcode is selected for AR mode.
+ * @param {*} enabled - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARImageResultEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setARImageResultEnabled", [enabled]);
+};
+
+/**
+ * Enables or disables the barcode thumbnail on result for AR mode.
+ * @param {*} enabled - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARBarcodeThumbnailOnResultEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setARBarcodeThumbnailOnResultEnabled", [enabled]);
+};
+
+/**
  * Sets height of header label above barcode in AR mode.
  * @param {*} value - Height in pixels.
  * @param {*} success
@@ -945,12 +965,21 @@ exports.isVibrateOnSuccessEnabled = function (success, error) {
 };
 
 /**
- * Retrieves the version of the Barkoder library
+ * Retrieves the version of the Barkoder SDK
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
 exports.getVersion = function (success, error) {
   exec(success, error, barkoderScanner, "getVersion", []);
+};
+
+/**
+ * Retrieves the version of the Barkoder library
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getLibVersion = function (success, error) {
+  exec(success, error, barkoderScanner, "getLibVersion", []);
 };
 
 /**
@@ -987,6 +1016,15 @@ exports.getRoiOverlayBackgroundColorHex = function (success, error) {
  */
 exports.getMaxZoomFactor = function (success, error) {
   exec(success, error, barkoderScanner, "getMaxZoomFactor", []);
+};
+
+/**
+ * Retrieves the current zoom factor for the device's camera
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getCurrentZoomFactor = function (success, error) {
+  exec(success, error, barkoderScanner, "getCurrentZoomFactor", []);
 };
 
 /**
@@ -1361,6 +1399,24 @@ exports.getARLocationType = function (success, error) {
  */
 exports.isARDoubleTapToFreezeEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isARDoubleTapToFreezeEnabled", []);
+};
+
+/**
+ * Retrieves whether image result is enabled for AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.isARImageResultEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isARImageResultEnabled", []);
+};
+
+/**
+ * Retrieves whether barcode thumbnail on result is enabled for AR mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.isARBarcodeThumbnailOnResultEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isARBarcodeThumbnailOnResultEnabled", []);
 };
 
 /**
