@@ -18,6 +18,7 @@
 - (void)pauseScanning:(CDVInvokedUrlCommand*)command;
 - (void)freezeScanning:(CDVInvokedUrlCommand*)command;
 - (void)unfreezeScanning:(CDVInvokedUrlCommand*)command;
+- (void)captureImage:(CDVInvokedUrlCommand*)command;
 - (void)scanImage:(CDVInvokedUrlCommand*)command;
 - (void)setLocationLineColor:(CDVInvokedUrlCommand*)command;
 - (void)setLocationLineWidth:(CDVInvokedUrlCommand*)command;
@@ -82,6 +83,9 @@
 - (void)setARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setARImageResultEnabled:(CDVInvokedUrlCommand *)command;
 - (void)setARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command;
+- (void)setARResultLimit:(CDVInvokedUrlCommand *)command;
+- (void)setARContinueScanningOnLimit:(CDVInvokedUrlCommand *)command;
+- (void)setAREmitResultsAtSessionEndOnly:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderHeight:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderShowMode:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command;
@@ -150,6 +154,9 @@
 - (void)isARDoubleTapToFreezeEnabled:(CDVInvokedUrlCommand *)command;
 - (void)isARImageResultEnabled:(CDVInvokedUrlCommand *)command;
 - (void)isARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command;
+- (void)getARResultLimit:(CDVInvokedUrlCommand *)command;
+- (void)getARContinueScanningOnLimit:(CDVInvokedUrlCommand *)command;
+- (void)getAREmitResultsAtSessionEndOnly:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderHeight:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderShowMode:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderMaxTextHeight:(CDVInvokedUrlCommand *)command;
@@ -324,6 +331,12 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)unfreezeScanning:(CDVInvokedUrlCommand*)command {
     [barkoderView unfreezeScanning];
+    
+    [self callbackSuccess:command];
+}
+
+- (void)captureImage:(CDVInvokedUrlCommand*)command {
+    [barkoderView captureImage];
     
     [self callbackSuccess:command];
 }
@@ -1131,6 +1144,24 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setARResultLimit:(CDVInvokedUrlCommand *)command {
+    int value = [[command.arguments objectAtIndex:0] intValue];
+    barkoderView.config.arConfig.resultLimit = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARContinueScanningOnLimit:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.continueScanningOnLimit = enabled;
+    [self callbackSuccess:command];
+}
+
+- (void)setAREmitResultsAtSessionEndOnly:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.emitResultsAtSessionEndOnly = enabled;
+    [self callbackSuccess:command];
+}
+
 - (void)setARHeaderHeight:(CDVInvokedUrlCommand *)command {
     float value = [[command.arguments objectAtIndex:0] floatValue];
     barkoderView.config.arConfig.headerHeight = value;
@@ -1599,6 +1630,18 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)isARBarcodeThumbnailOnResultEnabled:(CDVInvokedUrlCommand *)command {
     [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig barcodeThumbnailOnResult]];
+}
+
+- (void)getARResultLimit:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config.arConfig resultLimit]];
+}
+
+- (void)getARContinueScanningOnLimit:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig continueScanningOnLimit]];
+}
+
+- (void)getAREmitResultsAtSessionEndOnly:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig emitResultsAtSessionEndOnly]];
 }
 
 - (void)getARHeaderHeight:(CDVInvokedUrlCommand *)command {

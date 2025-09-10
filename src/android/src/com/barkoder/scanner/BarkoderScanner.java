@@ -94,6 +94,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.unfreezeScanning(callbackContext);
       return true;
     }
+    if (action.equals("captureImage")) {
+      this.captureImage(callbackContext);
+      return true;
+    }
     if (action.equals("scanImage")) {
       resultCallbackContext = callbackContext;
       this.scanImage(args, callbackContext);
@@ -343,16 +347,28 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setARDoubleTapToFreezeEnabled(args, callbackContext);
       return true;
     }
-    if (action.equals("setARHeaderHeight")) {
-      this.setARHeaderHeight(args, callbackContext);
-      return true;
-    }
     if (action.equals("setARImageResultEnabled")) {
       this.setARImageResultEnabled(args, callbackContext);
       return true;
     }
     if (action.equals("setARBarcodeThumbnailOnResultEnabled")) {
       this.setARBarcodeThumbnailOnResultEnabled(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARResultLimit")) {
+      this.setARResultLimit(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARContinueScanningOnLimit")) {
+      this.setARContinueScanningOnLimit(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setAREmitResultsAtSessionEndOnly")) {
+      this.setAREmitResultsAtSessionEndOnly(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARHeaderHeight")) {
+      this.setARHeaderHeight(args, callbackContext);
       return true;
     }
     if (action.equals("setARHeaderShowMode")) {
@@ -619,6 +635,18 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.isARBarcodeThumbnailOnResultEnabled(callbackContext);
       return true;
     }
+    if (action.equals("getARResultLimit")) {
+      this.getARResultLimit(callbackContext);
+      return true;
+    }
+    if (action.equals("getARContinueScanningOnLimit")) {
+      this.getARContinueScanningOnLimit(callbackContext);
+      return true;
+    }
+    if (action.equals("getAREmitResultsAtSessionEndOnly")) {
+      this.getAREmitResultsAtSessionEndOnly(callbackContext);
+      return true;
+    }
     if (action.equals("getARHeaderHeight")) {
       this.getARHeaderHeight(callbackContext);
       return true;
@@ -776,6 +804,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void unfreezeScanning(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       barkoderView.unfreezeScanning();
+    });
+
+    callbackContext.success();
+  }
+
+  private void captureImage(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.captureImage();
     });
 
     callbackContext.success();
@@ -1546,6 +1582,33 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void setARResultLimit(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int limit = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setResultLimit(limit);
+      callbackContext.success();
+    });
+  }
+
+  private void setARContinueScanningOnLimit(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setContinueScanningOnLimit(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setAREmitResultsAtSessionEndOnly(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setEmitResultsAtSessionEndOnly(value);
+      callbackContext.success();
+    });
+  }
+
   private void setARHeaderHeight(JSONArray args, CallbackContext callbackContext) throws JSONException {
     float value = (float) args.getDouble(0);
 
@@ -2030,6 +2093,24 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void isARBarcodeThumbnailOnResultEnabled(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.getArConfig().isBarcodeThumbnailOnResultEnabled()));
+    });
+  }
+
+  private void getARResultLimit(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getArConfig().getResultLimit());
+    });
+  }
+
+  private void getARContinueScanningOnLimit(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getContinueScanningOnLimit()));
+    });
+  }
+
+  private void getAREmitResultsAtSessionEndOnly(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getEmitResultsAtSessionEndOnly()));
     });
   }
 

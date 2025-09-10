@@ -201,6 +201,9 @@ export class BarkoderARConfig {
   doubleTapToFreezeEnabled?: boolean;
   imageResultEnabled?: boolean;
   barcodeThumbnailOnResult?: boolean;
+  resultLimit?: number;
+  continueScanningOnLimit?: boolean;
+  emitResultsAtSessionEndOnly?: boolean;
   headerHeight?: number;
   headerShowMode?: BarkoderARHeaderShowMode;
   headerMaxTextHeight?: number;

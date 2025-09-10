@@ -99,6 +99,15 @@ exports.unfreezeScanning = function (success, error) {
 };
 
 /**
+ * Captures the latest camera frame
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.captureImage = function (success, error) {
+  exec(success, error, barkoderScanner, "captureImage", []);
+};
+
+/**
  * Scan barcodes from base64 string image
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
@@ -802,6 +811,36 @@ exports.setARBarcodeThumbnailOnResultEnabled = function (enabled, success, error
 };
 
 /**
+ * Sets the maximum number of results allowed in a single AR scanning session.
+ * @param {*} value - Maximum results limit.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARResultLimit = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARResultLimit", [value]);
+};
+
+/**
+ * Sets whether scanning continues when the result limit is reached (only in `.interactiveDisabled` mode).
+ * @param {*} value - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARContinueScanningOnLimit = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setARContinueScanningOnLimit", [value]);
+};
+
+/**
+ * Sets whether results are emitted only at AR session end (or when the limit is reached).
+ * @param {*} value - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setAREmitResultsAtSessionEndOnly = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setAREmitResultsAtSessionEndOnly", [value]);
+};
+
+/**
  * Sets height of header label above barcode in AR mode.
  * @param {*} value - Height in pixels.
  * @param {*} success
@@ -1417,6 +1456,33 @@ exports.isARImageResultEnabled = function (success, error) {
  */
 exports.isARBarcodeThumbnailOnResultEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isARBarcodeThumbnailOnResultEnabled", []);
+};
+
+/**
+ * Retrieves the maximum number of results allowed in a single AR scanning session.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARResultLimit = function (success, error) {
+  exec(success, error, barkoderScanner, "getARResultLimit", []);
+};
+
+/**
+ * Retrieves whether scanning continues when the result limit is reached (only in `.interactiveDisabled` mode).
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARContinueScanningOnLimit = function (success, error) {
+  exec(success, error, barkoderScanner, "getARContinueScanningOnLimit", []);
+};
+
+/**
+ * Retrieves whether results are emitted only at AR session end (or when the limit is reached).
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getAREmitResultsAtSessionEndOnly = function (success, error) {
+  exec(success, error, barkoderScanner, "getAREmitResultsAtSessionEndOnly", []);
 };
 
 /**
