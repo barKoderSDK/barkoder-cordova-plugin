@@ -247,6 +247,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setQrMicroDpmModeEnabled(args, callbackContext);
       return true;
     }
+    if (action.equals("setQrMultiPartMergeEnabled")) {
+      this.setQrMultiPartMergeEnabled(args, callbackContext);
+      return true;
+    }
     if (action.equals("configureBarkoder")) {
       this.configureBarkoder(args, callbackContext);
       return true;
@@ -265,6 +269,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("setCustomOption")) {
       this.setCustomOption(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setCustomOptionGlobal")) {
+      this.setCustomOptionGlobal(args, callbackContext);
       return true;
     }
     if (action.equals("setScanningIndicatorColor")) {
@@ -401,6 +409,22 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("setARHeaderTextFormat")) {
       this.setARHeaderTextFormat(args, callbackContext);
+      return true;
+    }
+    if (action.equals("configureCloseButton")) {
+      this.configureCloseButton(args, callbackContext);
+      return true;
+    }
+    if (action.equals("configureFlashButton")) {
+      this.configureFlashButton(args, callbackContext);
+      return true;
+    }
+    if (action.equals("configureZoomButton")) {
+      this.configureZoomButton(args, callbackContext);
+      return true;
+    }
+    if (action.equals("selectVisibleBarcodes")) {
+      this.selectVisibleBarcodes(callbackContext);
       return true;
     }
     if (action.equals("isFlashAvailable")) {
@@ -563,6 +587,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.isQrMicroDpmModeEnabled(callbackContext);
       return true;
     }
+    if (action.equals("isQrMultiPartMergeEnabled")) {
+      this.isQrMultiPartMergeEnabled(callbackContext);
+      return true;
+    }
     if (action.equals("isIdDocumentMasterChecksumEnabled")) {
       this.isIdDocumentMasterChecksumEnabled(callbackContext);
       return true;
@@ -717,8 +745,9 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   public void createBarkoderConfig(Context context) {
     // In order to perform scanning, config property need to be set before
     // If license key is not valid you will receive results with asterisks inside
-    barkoderView.config = new BarkoderConfig(context, licenseKey, licenseCheckResult ->
-            BarkoderLog.i(TAG, "LICENSE RESULT: " + licenseCheckResult.message));
+    barkoderView.config = new BarkoderConfig(context, licenseKey, licenseCheckResult -> {
+      BarkoderLog.i(TAG, "License Info: " + Barkoder.GetLicenseInfo());
+    });
   }
 
   private void registerWithLicenseKey(JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -1254,6 +1283,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     callbackContext.success();
   }
 
+  private void setQrMultiPartMergeEnabled(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean enabled = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> barkoderView.config.getDecoderConfig().QR.multiPartMerge = enabled);
+
+    callbackContext.success();
+  }
+
   private void configureBarkoder(JSONArray args, CallbackContext callbackContext) throws JSONException {
     JSONObject configAsJson = args.getJSONObject(0);
 
@@ -1308,7 +1345,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
             "pdf417", "pdf417Micro", "datamatrix", "code25", "interleaved25", "itf14",
             "iata25", "matrix25", "datalogic25", "coop25", "code32", "telepen", "dotcode",
             "idDocument", "databar14", "databarLimited", "databarExpanded",
-            "postalIMB", "postnet", "planet", "australianPost", "royalMail", "kix", "japanesePost", "maxiCode",
+            "postalIMB", "postnet", "planet", "australianPost", "royalMail", "kix", "japanesePost", "maxiCode", "ocrText",
             "minLength", "maxLength", "threadsLimit", "roiX", "roiY", "roiWidth", "roiHeight"
         };
 
@@ -1318,7 +1355,7 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
             "PDF 417", "PDF 417 Micro", "Datamatrix", "Code 25", "Interleaved 2 of 5", "ITF 14",
             "IATA 25", "Matrix 25", "Datalogic 25", "COOP 25", "Code 32", "Telepen", "Dotcode",
             "ID Document", "Databar 14", "Databar Limited", "Databar Expanded",
-            "Postal IMB", "Postnet", "Planet", "Australian Post", "Royal Mail", "KIX", "Japanese Post", "MaxiCode",
+            "Postal IMB", "Postnet", "Planet", "Australian Post", "Royal Mail", "KIX", "Japanese Post", "MaxiCode", "OCR Text",
             "minimumLength", "maximumLength", "maxThreads", "roi_x", "roi_y", "roi_w", "roi_h"
         };
 
@@ -1372,6 +1409,15 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
 
     this.cordova.getActivity().runOnUiThread(() -> {
       Barkoder.SetCustomOption(barkoderView.config.getDecoderConfig(), option, value);
+    });
+  }
+
+  private void setCustomOptionGlobal(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String option = args.getString(0);
+    int value = args.getInt(1);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      Barkoder.SetCustomOptionGlobal(option, value);
     });
   }
 
@@ -1690,6 +1736,123 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void configureCloseButton(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    final boolean visible = args.getBoolean(0);
+    final float positionX = (float) args.getDouble(1);
+    final float positionY = (float) args.getDouble(2);
+    final Float iconSize = args.isNull(3) ? null : (float) args.getDouble(3);
+    final String tintHex = args.isNull(4) ? null : args.getString(4);
+    final Integer tintColor = BarkoderUtil.hexColorToIntColorOrNull(tintHex);
+    final String bgHex = args.isNull(5) ? null : args.getString(5);
+    final Integer backgroundColor = BarkoderUtil.hexColorToIntColorOrNull(bgHex);
+    final Float cornerRadius = args.isNull(6) ? null : (float) args.getDouble(6);
+    final Float padding = args.isNull(7) ? null : (float) args.getDouble(7);
+    final Boolean useCustomIcon = args.isNull(8) ? null : args.getBoolean(8);
+    final String base64CustomIcon = args.isNull(9) ? null : args.getString(9);
+    final Bitmap customIcon = BarkoderUtil.decodeBase64BitmapOrNull(base64CustomIcon);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+        barkoderView.configureCloseButton(
+          visible,
+          new float[] { positionX, positionY },
+          iconSize,
+          tintColor,
+          backgroundColor,
+          cornerRadius,
+          padding,
+          useCustomIcon,
+          customIcon,
+          () -> cordova.getActivity().runOnUiThread(() -> {
+            webView.loadUrl("javascript:cordova.fireDocumentEvent('barkoderCloseButtonTappedEvent')");
+          })
+        );
+        callbackContext.success();
+    });
+  }
+
+  private void configureFlashButton(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    final boolean visible = args.getBoolean(0);
+    final float positionX = (float) args.getDouble(1);
+    final float positionY = (float) args.getDouble(2);
+    final Float iconSize = args.isNull(3) ? null : (float) args.getDouble(3);
+    final String tintHex = args.isNull(4) ? null : args.getString(4);
+    final Integer tintColor = BarkoderUtil.hexColorToIntColorOrNull(tintHex);
+    final String bgHex = args.isNull(5) ? null : args.getString(5);
+    final Integer backgroundColor = BarkoderUtil.hexColorToIntColorOrNull(bgHex);
+    final Float cornerRadius = args.isNull(6) ? null : (float) args.getDouble(6);
+    final Float padding = args.isNull(7) ? null : (float) args.getDouble(7);
+    final Boolean useCustomIcon = args.isNull(8) ? null : args.getBoolean(8);
+    final String base64CustomIconFlashOn = args.isNull(9) ? null : args.getString(9);
+    final String base64CustomIconFlashOff = args.isNull(10) ? null : args.getString(10);
+
+    final Bitmap customIconFlashOn = BarkoderUtil.decodeBase64BitmapOrNull(base64CustomIconFlashOn);
+    final Bitmap customIconFlashOff = BarkoderUtil.decodeBase64BitmapOrNull(base64CustomIconFlashOff);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+        barkoderView.configureFlashButton(
+          visible,
+          new float[] { positionX, positionY },
+          iconSize,
+          tintColor,
+          backgroundColor,
+          cornerRadius,
+          padding,
+          useCustomIcon,
+          customIconFlashOn,
+          customIconFlashOff
+        );
+        callbackContext.success();
+    });
+  }
+
+  private void configureZoomButton(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    final boolean visible = args.getBoolean(0);
+    final float positionX = (float) args.getDouble(1);
+    final float positionY = (float) args.getDouble(2);
+    final Float iconSize = args.isNull(3) ? null : (float) args.getDouble(3);
+    final String tintHex = args.isNull(4) ? null : args.getString(4);
+    final Integer tintColor = BarkoderUtil.hexColorToIntColorOrNull(tintHex);
+    final String bgHex = args.isNull(5) ? null : args.getString(5);
+    final Integer backgroundColor = BarkoderUtil.hexColorToIntColorOrNull(bgHex);
+    final Float cornerRadius = args.isNull(6) ? null : (float) args.getDouble(6);
+    final Float padding = args.isNull(7) ? null : (float) args.getDouble(7);
+    final Boolean useCustomIcon = args.isNull(8) ? null : args.getBoolean(8);
+    final String base64CustomIconZoomedIn = args.isNull(9) ? null : args.getString(9);
+    final String base64CustomIconZoomedOut = args.isNull(10) ? null : args.getString(10);
+
+    final Bitmap customIconZoomedIn = BarkoderUtil.decodeBase64BitmapOrNull(base64CustomIconZoomedIn);
+    final Bitmap customIconZoomedOut = BarkoderUtil.decodeBase64BitmapOrNull(base64CustomIconZoomedOut);
+
+    final Float zoomedInFactor = args.isNull(11) ? null : (float) args.getDouble(11);
+    final Float zoomedOutFactor = args.isNull(12) ? null : (float) args.getDouble(12);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+        barkoderView.configureZoomButton(
+          visible,
+          new float[] { positionX, positionY },
+          iconSize,
+          tintColor,
+          backgroundColor,
+          cornerRadius,
+          padding,
+          useCustomIcon,
+          customIconZoomedIn,
+          customIconZoomedOut,
+          zoomedInFactor,
+          zoomedOutFactor
+        );
+        callbackContext.success();
+    });
+  }
+
+  private void selectVisibleBarcodes(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.selectVisibleBarcodes();
+    });
+
+    callbackContext.success();
+  }
+
   // Getters
 
   private void isFlashAvailable(CallbackContext callbackContext) {
@@ -1982,6 +2145,12 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void isQrMicroDpmModeEnabled(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().QRMicro.dpmMode));
+    });
+  }
+
+  private void isQrMultiPartMergeEnabled(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().QR.multiPartMerge));
     });
   }
 

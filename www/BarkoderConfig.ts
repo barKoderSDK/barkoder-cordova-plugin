@@ -85,7 +85,8 @@ export enum BarcodeType {
   royalMail,
   kix,
   japanesePost,
-  maxiCode
+  maxiCode,
+  ocrText
 }
 
 export enum BarkoderARMode {
@@ -143,7 +144,7 @@ export class BarkoderConfig {
 export class DekoderConfig {
   aztec?: BarcodeConfig;
   aztecCompact?: BarcodeConfig;
-  qr?: BarcodeConfigWithDpmMode;
+  qr?: QRBarcodeConfig;
   qrMicro?: BarcodeConfigWithDpmMode;
   code128?: BarcodeConfigWithLength;
   code93?: BarcodeConfigWithLength;
@@ -181,6 +182,7 @@ export class DekoderConfig {
   kix?: BarcodeConfig;
   japanesePost?: BarcodeConfig;
   maxiCode?: BarcodeConfig;
+  ocrText?: BarcodeConfig;
   general?: GeneralSettings;
 
   constructor(config: Partial<DekoderConfig>) {
@@ -306,6 +308,23 @@ export class BarcodeConfigWithDpmMode {
   }
 }
 
+export class QRBarcodeConfig {
+  enabled?: boolean;
+  dpmMode?: number;
+  multiPartMerge?: boolean;
+  minLength?: number;
+  maxLength?: number;
+
+  constructor(config: Partial<QRBarcodeConfig>) {
+    Object.assign(this, config);
+  }
+
+  setLengthRange(minLength: number, maxLength: number) {
+    this.minLength = minLength;
+    this.maxLength = maxLength;
+  }
+}
+
 export enum IdDocumentMasterChecksumType {
   disabled,
   enabled,
@@ -382,19 +401,33 @@ export class DecoderResult {
   characterSet?: string | null;
   extra?: Record<string, any> | null;
   mrzImagesAsBase64?: { name: string; base64: string }[];
+  sadlImageAsBase64?: string | null;
+  locationPoints?: { x: number; y: number }[];
 
   constructor(resultMap: Record<string, any>) {
-    this.barcodeType = resultMap['barcodeType'];
-    this.barcodeTypeName = resultMap['barcodeTypeName'];
-    this.binaryDataAsBase64 = resultMap['binaryDataAsBase64'];
-    this.textualData = resultMap['textualData'];
-    this.characterSet = resultMap['characterSet'] || null;
-    this.extra = 'extra' in resultMap ? JSON.parse(resultMap['extra']) : null;
-    this.mrzImagesAsBase64 = Array.isArray(resultMap['mrzImagesAsBase64'])
-      ? resultMap['mrzImagesAsBase64'].map((image: { name: string; base64: string }) => ({
-        name: image.name,
-        base64: `data:image/jpeg;base64,${image.base64}`,
-      }))
+    this.barcodeType = resultMap["barcodeType"];
+    this.barcodeTypeName = resultMap["barcodeTypeName"];
+    this.binaryDataAsBase64 = resultMap["binaryDataAsBase64"];
+    this.textualData = resultMap["textualData"];
+    this.characterSet = resultMap["characterSet"] || null;
+    this.extra = "extra" in resultMap ? JSON.parse(resultMap["extra"]) : null;
+    this.mrzImagesAsBase64 = Array.isArray(resultMap["mrzImagesAsBase64"])
+      ? resultMap["mrzImagesAsBase64"].map(
+          (image: { name: string; base64: string }) => ({
+            name: image.name,
+            base64: `data:image/jpeg;base64,${image.base64}`,
+          })
+        )
       : [];
+    this.sadlImageAsBase64 = this.convertToBase64(
+      resultMap["sadlImageAsBase64"]
+    );
+    this.locationPoints = Array.isArray(resultMap["locationPoints"])
+      ? resultMap["locationPoints"]
+      : undefined;
+  }
+
+  private convertToBase64(data: string | null | undefined): string | null {
+    return data ? `data:image/jpeg;base64,${data}` : null;
   }
 }

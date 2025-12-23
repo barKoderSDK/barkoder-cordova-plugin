@@ -538,6 +538,18 @@ exports.setQrMicroDpmModeEnabled = function (enabled, success, error) {
 };
 
 /**
+ * Sets whether the QR multi-part merge is enabled.
+ * @param {*} enabled - Set to true to enable QR multi-part merge, false to disable it
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setQrMultiPartMergeEnabled = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setQrMultiPartMergeEnabled", [
+    enabled,
+  ]);
+};
+
+/**
  * Configures the Barkoder functionality based on the provided configuration
  * @param {*} barkoderConfig - The configuration object for Barkoder scanner
  * @param {*} success - The callback function to be invoked on successful execution
@@ -628,6 +640,17 @@ exports.setScanningIndicatorAlwaysVisible = function (value, success, error) {
  */
 exports.setCustomOption = function (option, value, success, error) {
   exec(success, error, barkoderScanner, "setCustomOption", [option, value]);
+};
+
+/**
+ * Sets a custom option globally (must be called before createBarkoderConfig()).
+ * @param {*} option - The integer value for the custom option.
+ * @param {*} value - The integer value for the custom option.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setCustomOptionGlobal = function (option, value, success, error) {
+  exec(success, error, barkoderScanner, "setCustomOptionGlobal", [option, value]);
 };
 
 /**
@@ -928,6 +951,76 @@ exports.setARHeaderVerticalTextMargin = function (value, success, error) {
  */
 exports.setARHeaderTextFormat = function (value, success, error) {
   exec(success, error, barkoderScanner, "setARHeaderTextFormat", [value]);
+};
+
+/**
+ * Configures the close button
+ * @param {*} visible - Show the button while scanning.
+ * @param {*} positionX - X position in points.
+ * @param {*} positionY - Y position in points.
+ * @param {*} iconSize - Glyph point size.
+ * @param {*} tintColor - Icon tint. Hex string (e.g., "#3472c9"). (leave it as "" to use default)
+ * @param {*} backgroundColor - Button background. Hex string. Default: clear. (leave it as "" to use the default)
+ * @param {*} cornerRadius - Corner radius.
+ * @param {*} padding - Inner padding around the glyph.
+ * @param {*} useCustomIcon - Set true to use a provided custom icon.
+ * @param {*} customIcon - Custom icon for the button as a Base64-encoded image string.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.configureCloseButton = function (visible, positionX, positionY, iconSize, tintColor, backgroundColor, cornerRadius, padding, useCustomIcon, customIcon, success, error) {
+  exec(success, error, barkoderScanner, "configureCloseButton", [visible, positionX, positionY, iconSize, tintColor, backgroundColor, cornerRadius, padding, useCustomIcon, customIcon]);
+};
+
+/**
+ Configures the flash (torch) button. Auto-hides if torch is unavailable.
+ * @param {*} visible - Show the button while scanning.
+ * @param {*} positionX - X position in points.
+ * @param {*} positionY - Y position in points.
+ * @param {*} iconSize - Glyph point size.
+ * @param {*} tintColor - Icon tint. Hex string (e.g., "#3472c9"). (leave it as "" to use default)
+ * @param {*} backgroundColor - Button background. Hex string. Default: clear. (leave it as "" to use the default)
+ * @param {*} cornerRadius - Corner radius.
+ * @param {*} padding - Inner padding around the glyph.
+ * @param {*} useCustomIcon - Set true to use provided custom icons.
+ * @param {*} customIconFlashOn - Custom icon for the ON state as a Base64-encoded image string.
+ * @param {*} customIconFlashOff - Custom icon for the OFF state as a Base64-encoded image string.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.configureFlashButton = function (visible, positionX, positionY, iconSize, tintColor, backgroundColor, cornerRadius, padding, useCustomIcon, customIconFlashOn, customIconFlashOff, success, error) {
+  exec(success, error, barkoderScanner, "configureFlashButton", [visible, positionX, positionY, iconSize, tintColor, backgroundColor, cornerRadius, padding, useCustomIcon, customIconFlashOn, customIconFlashOff]);
+};
+
+/**
+ * Configures the zoom button
+ * @param {*} visible - Show the button while scanning.
+ * @param {*} positionX - X position in points.
+ * @param {*} positionY - Y position in points.
+ * @param {*} iconSize - Glyph point size.
+ * @param {*} tintColor - Icon tint. Hex string (e.g., "#3472c9"). (leave it as "" to use default)
+ * @param {*} backgroundColor - Button background. Hex string. Default: clear. (leave it as "" to use the default)
+ * @param {*} cornerRadius - Corner radius.
+ * @param {*} padding - Inner padding around the glyph.
+ * @param {*} useCustomIcon - Set true to use provided custom icons.
+ * @param {*} customIconZoomedIn - Custom icon for the zoomed-in state as a Base64-encoded image string.
+ * @param {*} customIconZoomedOut - Custom icon for the zoomed-out state as a Base64-encoded image string.
+ * @param {*} zoomedInFactor - Zoom factor when toggled in.
+ * @param {*} zoomedOutFactor - Zoom factor when toggled out.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.configureZoomButton = function (visible, positionX, positionY, iconSize, tintColor, backgroundColor, cornerRadius, padding, useCustomIcon, customIconZoomedIn, customIconZoomedOut, zoomedInFactor, zoomedOutFactor, success, error) {
+  exec(success, error, barkoderScanner, "configureZoomButton", [visible, positionX, positionY, iconSize, tintColor, backgroundColor, cornerRadius, padding, useCustomIcon, customIconZoomedIn, customIconZoomedOut, zoomedInFactor, zoomedOutFactor]);
+};
+
+/**
+ * Selects all barcodes that are currently visible in AR mode.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.selectVisibleBarcodes = function (success, error) {
+  exec(success, error, barkoderScanner, "selectVisibleBarcodes", []);
 };
 
 // - Getters
@@ -1294,6 +1387,15 @@ exports.isQrDpmModeEnabled = function (success, error) {
  */
 exports.isQrMicroDpmModeEnabled = function (success, error) {
   exec(success, error, barkoderScanner, "isQrMicroDpmModeEnabled", []);
+};
+
+/**
+ * Retrieves whether QR multi-part merge is enabled
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.isQrMultiPartMergeEnabled = function (success, error) {
+  exec(success, error, barkoderScanner, "isQrMultiPartMergeEnabled", []);
 };
 
 /**

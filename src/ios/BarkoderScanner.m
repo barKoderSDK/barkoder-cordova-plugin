@@ -56,11 +56,13 @@
 - (void)setDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setQrDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)setQrMultiPartMergeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)configureBarkoder:(CDVInvokedUrlCommand*)command;
 - (void)setIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setUPCEexpandToUPCA:(CDVInvokedUrlCommand *)command;
 - (void)setUPCE1expandToUPCA:(CDVInvokedUrlCommand *)command;
 - (void)setCustomOption:(CDVInvokedUrlCommand *)command;
+- (void)setCustomOptionGlobal:(CDVInvokedUrlCommand *)command;
 - (void)setScanningIndicatorColor:(CDVInvokedUrlCommand *)command;
 - (void)setScanningIndicatorWidth:(CDVInvokedUrlCommand *)command;
 - (void)setScanningIndicatorAnimation:(CDVInvokedUrlCommand *)command;
@@ -95,6 +97,10 @@
 - (void)setARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderTextFormat:(CDVInvokedUrlCommand *)command;
+- (void)configureCloseButton:(CDVInvokedUrlCommand *)command;
+- (void)configureFlashButton:(CDVInvokedUrlCommand *)command;
+- (void)configureZoomButton:(CDVInvokedUrlCommand *)command;
+- (void)selectVisibleBarcodes:(CDVInvokedUrlCommand*)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -136,6 +142,7 @@
 - (void)isDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isQrDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
+- (void)isQrMultiPartMergeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getScanningIndicatorColorHex:(CDVInvokedUrlCommand *)command;
 - (void)getScanningIndicatorWidth:(CDVInvokedUrlCommand *)command;
@@ -206,28 +213,32 @@ NSString *resultCallbackId;
 CDVPluginResult* pluginResult = nil;
 
 - (void)initialize:(CDVInvokedUrlCommand*)command {
-    NSMutableDictionary *barkoderViewBounds = [[NSMutableDictionary alloc] init];
-    
-    barkoderViewBounds[@"width"] = [command.arguments objectAtIndex:0];
-    barkoderViewBounds[@"height"] = [command.arguments objectAtIndex:1];
-    barkoderViewBounds[@"x"] = [command.arguments objectAtIndex:2];
-    barkoderViewBounds[@"y"] = [command.arguments objectAtIndex:3];
-    
-    CGRect barkoderViewFrame = CGRectMake([[barkoderViewBounds objectForKey:@"x"] doubleValue], [[barkoderViewBounds objectForKey:@"y"] doubleValue], [[barkoderViewBounds objectForKey:@"width"] doubleValue], [[barkoderViewBounds objectForKey:@"height"] doubleValue]);
-    
-    barkoderView = [[BarkoderView alloc] initWithFrame:barkoderViewFrame];
-    [self createBarkoderConfig];
-    
-    [self.webView.superview addSubview:barkoderView];
-    
-    [self callbackSuccessMessage:command message:@"barkoderView initialized"];
+  CGFloat width  = [[command.arguments objectAtIndex:0] doubleValue];
+  CGFloat height = [[command.arguments objectAtIndex:1] doubleValue];
+  CGFloat x      = [[command.arguments objectAtIndex:2] doubleValue];
+  CGFloat y      = [[command.arguments objectAtIndex:3] doubleValue];
+  CGRect frame = CGRectMake(x, y, width, height);
+  
+  __weak __typeof(self) weakSelf = self;
+  [self.commandDelegate runInBackground:^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+      __typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) { return; }
+      
+      barkoderView = [[BarkoderView alloc] initWithFrame:frame];
+      [strongSelf createBarkoderConfig];
+      [strongSelf.webView.superview addSubview:barkoderView];
+      
+      [strongSelf callbackSuccessMessage:command message:@"barkoderView initialized"];
+    });
+  }];
 }
 
 - (void)createBarkoderConfig {
     // In order to perform scanning, config property need to be set before
     // If license key is not valid you will receive results with asterisks inside
     barkoderView.config = [[BarkoderConfig alloc] initWithLicenseKey:licenseKey licenseCheckHandler:^(LicenseCheckResult * _Nonnull licenseResult) {
-        NSLog(@"%@", [NSString stringWithFormat:@"Licensing SDK: %@", licenseResult]);
+        NSLog(@"License Info: %@", [Config getLicenseInfo]);
     }];
 }
 
@@ -304,17 +315,30 @@ CDVPluginResult* pluginResult = nil;
 }
 
 - (void)startScanning:(CDVInvokedUrlCommand*)command {
+  __weak __typeof(self) weakSelf = self;
+  [self.commandDelegate runInBackground:^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) { return; }
+    
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSError *error = nil;
-        resultCallbackId = command.callbackId;
-        [barkoderView startScanning:self error:&error];
+      NSError *error = nil;
+      resultCallbackId = command.callbackId;
+      [barkoderView startScanning:strongSelf error:&error];
     });
+  }];
 }
 
 - (void)stopScanning:(CDVInvokedUrlCommand*)command {
-    [barkoderView stopScanning];
+  __weak __typeof(self) weakSelf = self;
+  [self.commandDelegate runInBackground:^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) { return; }
     
-    [self callbackSuccess:command];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [barkoderView stopScanning];
+      [strongSelf callbackSuccess:command];
+    });
+  }];
 }
 
 - (void)pauseScanning:(CDVInvokedUrlCommand*)command {
@@ -727,12 +751,16 @@ CDVPluginResult* pluginResult = nil;
             break;
         case Dotcode:
             decoderConfig.dotcode.enabled = enabled;
+            break;
         case IDDocument:
             decoderConfig.idDocument.enabled = enabled;
+            break;
         case Databar14:
             decoderConfig.databar14.enabled = enabled;
+            break;
         case DatabarLimited:
             decoderConfig.databarLimited.enabled = enabled;
+            break;
         case DatabarExpanded:
             decoderConfig.databarExpanded.enabled = enabled;
             break;
@@ -756,8 +784,12 @@ CDVPluginResult* pluginResult = nil;
             break;
         case JapanesePost:
             decoderConfig.japanesePost.enabled = enabled;
+            break;
         case MaxiCode:
             decoderConfig.maxiCode.enabled = enabled;
+            break;
+        case OCRText:
+            decoderConfig.ocrText.enabled = enabled;
             break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
@@ -854,6 +886,14 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setQrMultiPartMergeEnabled:(CDVInvokedUrlCommand *)command {
+    BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
+    
+    barkoderView.config.decoderConfig.qr.multiPartMerge = enabled;
+    
+    [self callbackSuccess:command];
+}
+
 - (void)configureBarkoder:(CDVInvokedUrlCommand *)command {
     NSMutableDictionary *barkoderConfigAsDictionary = [command.arguments objectAtIndex:0];
     BarkoderConfig *barkoderConfig = barkoderView.config;
@@ -914,7 +954,7 @@ CDVPluginResult* pluginResult = nil;
             @"pdf417", @"pdf417Micro", @"datamatrix",@"code25", @"interleaved25", @"itf14",
             @"iata25", @"matrix25", @"datalogic25", @"coop25", @"code32", @"telepen", @"dotcode",
             @"idDocument", @"databar14", @"databarLimited", @"databarExpanded",
-            @"postalIMB", @"postnet", @"planet", @"australianPost", @"royalMail", @"kix", @"japanesePost", @"maxiCode",
+            @"postalIMB", @"postnet", @"planet", @"australianPost", @"royalMail", @"kix", @"japanesePost", @"maxiCode", @"ocrText",
             @"minLength", @"maxLength", @"threadsLimit", @"roiX", @"roiY", @"roiWidth", @"roiHeight"
         ];
         NSArray *values = @[
@@ -923,7 +963,7 @@ CDVPluginResult* pluginResult = nil;
             @"PDF 417", @"PDF 417 Micro", @"Datamatrix", @"Code 25", @"Interleaved 2 of 5", @"ITF 14",
             @"IATA 25", @"Matrix 25", @"Datalogic 25", @"COOP 25", @"Code 32", @"Telepen", @"Dotcode",
             @"ID Document", @"Databar 14", @"Databar Limited", @"Databar Expanded",
-            @"Postal IMB", @"Postnet", @"Planet", @"Australian Post", @"Royal Mail", @"KIX", @"Japanese Post", @"MaxiCode",
+            @"Postal IMB", @"Postnet", @"Planet", @"Australian Post", @"Royal Mail", @"KIX", @"Japanese Post", @"MaxiCode", @"OCR Text",
             @"minimumLength", @"maximumLength", @"maxThreads", @"roi_x", @"roi_y", @"roi_w", @"roi_h"
         ];
         
@@ -986,6 +1026,13 @@ CDVPluginResult* pluginResult = nil;
     NSString *option = [command.arguments objectAtIndex:0];
     int value = [[command.arguments objectAtIndex:1] intValue];
     [barkoderView.config.decoderConfig setcustomOption:option value:value];
+    [self callbackSuccess:command];
+}
+
+- (void)setCustomOptionGlobal:(CDVInvokedUrlCommand *)command {
+    NSString *option = [command.arguments objectAtIndex:0];
+    int value = [[command.arguments objectAtIndex:1] intValue];
+    [Config setcustomOptionGlobal:option value:value];
     [self callbackSuccess:command];
 }
 
@@ -1220,6 +1267,130 @@ CDVPluginResult* pluginResult = nil;
     barkoderView.config.arConfig.headerTextFormat = value;
     [self callbackSuccess:command];
 }
+
+- (void)configureCloseButton:(CDVInvokedUrlCommand*)command {
+  BOOL visible = [[command.arguments objectAtIndex:0] boolValue];
+  CGFloat positionX = (CGFloat)[[command.arguments objectAtIndex:1] doubleValue];
+  CGFloat positionY = (CGFloat)[[command.arguments objectAtIndex:2] doubleValue];
+  NSValue *position = [NSValue valueWithCGPoint:CGPointMake(positionX, positionY)];
+  NSNumber *iconSize = [command.arguments objectAtIndex:3];
+  NSString *tintHexString = [command.arguments objectAtIndex:4];
+  UIColor *tintColor = [self colorFromHexOrNil:tintHexString];
+  NSString *backgroundHexString = [command.arguments objectAtIndex:5];
+  UIColor *backgroundColor = [self colorFromHexOrNil:backgroundHexString];
+  NSNumber *cornerRadius = [command.arguments objectAtIndex:6];
+  NSNumber *padding = [command.arguments objectAtIndex:7];
+  NSNumber *useCustomIconNum = ([command.arguments objectAtIndex:8] == (id)[NSNull null])
+  ? nil
+  : @([[command.arguments objectAtIndex:8] boolValue]);
+  
+  __weak __typeof(self) weakSelf = self;
+  void (^onClose)(void) = ^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [strongSelf.commandDelegate evalJs:
+       @"cordova.fireDocumentEvent('barkoderCloseButtonTappedEvent')"];
+    });
+  };
+  
+  NSString *base64CustomIcon = [command.arguments objectAtIndex:9];
+  
+  [self.commandDelegate runInBackground:^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    
+    UIImage *customIcon = [strongSelf imageFromBase64String:base64CustomIcon];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [barkoderView configureCloseButtonWithVisible:visible position:position iconSize:iconSize tintColor:tintColor backgroundColor:backgroundColor cornerRadius:cornerRadius padding:padding useCustomIcon:useCustomIconNum customIcon:customIcon onClose:onClose];
+      
+      [strongSelf callbackSuccess:command];
+    });
+  }];
+}
+
+- (void)configureFlashButton:(CDVInvokedUrlCommand*)command {
+  BOOL visible = [[command.arguments objectAtIndex:0] boolValue];
+  CGFloat positionX = (CGFloat)[[command.arguments objectAtIndex:1] doubleValue];
+  CGFloat positionY = (CGFloat)[[command.arguments objectAtIndex:2] doubleValue];
+  NSValue *position = [NSValue valueWithCGPoint:CGPointMake(positionX, positionY)];
+  NSNumber *iconSize = [command.arguments objectAtIndex:3];
+  NSString *tintHexString = [command.arguments objectAtIndex:4];
+  UIColor *tintColor = [self colorFromHexOrNil:tintHexString];
+  NSString *backgroundHexString = [command.arguments objectAtIndex:5];
+  UIColor *backgroundColor = [self colorFromHexOrNil:backgroundHexString];
+  NSNumber *cornerRadius = [command.arguments objectAtIndex:6];
+  NSNumber *padding = [command.arguments objectAtIndex:7];
+  NSNumber *useCustomIconNum = ([command.arguments objectAtIndex:8] == (id)[NSNull null])
+  ? nil
+  : @([[command.arguments objectAtIndex:8] boolValue]);
+  
+  __weak __typeof(self) weakSelf = self;
+  
+  NSString *base64CustomIconFlashOn = [command.arguments objectAtIndex:9];
+  NSString *base64CustomIconFlashOff = [command.arguments objectAtIndex:10];
+  
+  [self.commandDelegate runInBackground:^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    
+    UIImage *customIconFlashOn = [self imageFromBase64String:base64CustomIconFlashOn];
+    UIImage *customIconFlashOff = [self imageFromBase64String:base64CustomIconFlashOff];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [barkoderView configureFlashButtonWithVisible:visible position:position iconSize:iconSize tintColor:tintColor backgroundColor:backgroundColor cornerRadius:cornerRadius padding:padding useCustomIcon:useCustomIconNum customIconFlashOn:customIconFlashOn customIconFlashOff:customIconFlashOff];
+      
+      [strongSelf callbackSuccess:command];
+    });
+  }];
+}
+
+- (void)configureZoomButton:(CDVInvokedUrlCommand*)command {
+  BOOL visible = [[command.arguments objectAtIndex:0] boolValue];
+  CGFloat positionX = (CGFloat)[[command.arguments objectAtIndex:1] doubleValue];
+  CGFloat positionY = (CGFloat)[[command.arguments objectAtIndex:2] doubleValue];
+  NSValue *position = [NSValue valueWithCGPoint:CGPointMake(positionX, positionY)];
+  NSNumber *iconSize = [command.arguments objectAtIndex:3];
+  NSString *tintHexString = [command.arguments objectAtIndex:4];
+  UIColor *tintColor = [self colorFromHexOrNil:tintHexString];
+  NSString *backgroundHexString = [command.arguments objectAtIndex:5];
+  UIColor *backgroundColor = [self colorFromHexOrNil:backgroundHexString];
+  NSNumber *cornerRadius = [command.arguments objectAtIndex:6];
+  NSNumber *padding = [command.arguments objectAtIndex:7];
+  NSNumber *useCustomIconNum = ([command.arguments objectAtIndex:8] == (id)[NSNull null])
+  ? nil
+  : @([[command.arguments objectAtIndex:8] boolValue]);
+  
+  __weak __typeof(self) weakSelf = self;
+  
+  NSString *base64CustomIconZoomedIn  = [command.arguments objectAtIndex:9];
+  NSString *base64CustomIconZoomedOut = [command.arguments objectAtIndex:10];
+  NSNumber *zoomedInFactor  = [command.arguments objectAtIndex:11];
+  NSNumber *zoomedOutFactor = [command.arguments objectAtIndex:12];
+  
+  [self.commandDelegate runInBackground:^{
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) return;
+    
+    UIImage *customIconZoomedIn = [self imageFromBase64String:base64CustomIconZoomedIn];
+    UIImage *customIconZoomedOut = [self imageFromBase64String:base64CustomIconZoomedOut];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [barkoderView configureZoomButtonWithVisible:visible position:position iconSize:iconSize tintColor:tintColor backgroundColor:backgroundColor cornerRadius:cornerRadius padding:padding useCustomIcon:useCustomIconNum customIconZoomedIn:customIconZoomedIn customIconZoomedOut:customIconZoomedOut zoomedInFactor:zoomedInFactor zoomedOutFactor:zoomedOutFactor];
+      
+      [strongSelf callbackSuccess:command];
+    });
+  }];
+}
+
+- (void)selectVisibleBarcodes:(CDVInvokedUrlCommand*)command {
+    [barkoderView selectVisibleBarcodes];
+    
+    [self callbackSuccess:command];
+}
+
 
 // MARK: - Getters
 
@@ -1504,8 +1675,12 @@ CDVPluginResult* pluginResult = nil;
             break;
         case JapanesePost:
             [self callbackSuccessBoolean:command boolean:decoderConfig.japanesePost.enabled];
+            break;
         case MaxiCode:
             [self callbackSuccessBoolean:command boolean:decoderConfig.maxiCode.enabled];
+            break;
+        case OCRText:
+            [self callbackSuccessBoolean:command boolean:decoderConfig.ocrText.enabled];
             break;
         default:
             [self callbackErrorMessage:command message:[self barkoderErorrMessage:BARCODE_TYPE_NOT_FOUNDED]];
@@ -1557,6 +1732,10 @@ CDVPluginResult* pluginResult = nil;
 - (void)isQrMicroDpmModeEnabled:(CDVInvokedUrlCommand *)command {
     BOOL isEnabled = (barkoderView.config.decoderConfig.qrMicro.dpmMode != 0);
     [self callbackSuccessBoolean:command boolean:isEnabled];
+}
+
+- (void)isQrMultiPartMergeEnabled:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.decoderConfig.qr multiPartMerge]];
 }
 
 - (void)isIdDocumentMasterChecksumEnabled:(CDVInvokedUrlCommand *)command {
@@ -1731,6 +1910,34 @@ CDVPluginResult* pluginResult = nil;
       }
     }
     
+    if (decoderResult.extra &&
+        [decoderResult.extra isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *extraDict = (NSDictionary *)decoderResult.extra;
+      UIImage *sadlImage = [BarkoderHelper sadlImageFromExtra:extraDict];
+      if (sadlImage) {
+        NSData *sadlImageData = UIImagePNGRepresentation(sadlImage);
+        if (sadlImageData) {
+          resultJson[@"sadlImageAsBase64"] = [sadlImageData base64EncodedStringWithOptions:0];
+        }
+      }
+    }
+    
+    CGPoint *pointsPtr = [decoderResult getLocationPoints];
+    if (pointsPtr != NULL) {
+        NSMutableArray *pointsJson = [NSMutableArray arrayWithCapacity:4];
+
+        for (int i = 0; i < 4; i++) {
+            NSDictionary *pointDict = @{
+                @"x": @(pointsPtr[i].x),
+                @"y": @(pointsPtr[i].y)
+            };
+            [pointsJson addObject:pointDict];
+        }
+
+        resultJson[@"locationPoints"] = pointsJson;
+    }
+
+    
     [resultsJsonArray addObject:resultJson];
   }
   
@@ -1826,6 +2033,97 @@ CDVPluginResult* pluginResult = nil;
                            lroundf(blue * 255)];
     
     return hexString;
+}
+
+// Parses "#RGB", "#ARGB", "#RRGGBB", or "#AARRGGBB" (alpha first when present).
+// Returns nil for empty or invalid input.
+- (UIColor * _Nullable)colorFromHexOrNil:(NSString * _Nullable)raw
+{
+    if (raw == nil) { return nil; }
+
+    // Trim whitespace/newlines
+    NSString *s = [raw stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (s.length == 0) { return nil; }
+
+    // Strip standard prefixes
+    if ([s hasPrefix:@"#"]) {
+        s = [s substringFromIndex:1];
+    } else if ([[s lowercaseString] hasPrefix:@"0x"]) {
+        s = [s substringFromIndex:2];
+    }
+
+    // Accept only 3, 4, 6, 8 characters
+    NSUInteger len = s.length;
+    if (!(len == 3 || len == 4 || len == 6 || len == 8)) {
+        return nil;
+    }
+
+    // Ensure all characters are hex digits
+    NSCharacterSet *nonHex = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789abcdefABCDEF"] invertedSet];
+    if ([s rangeOfCharacterFromSet:nonHex].location != NSNotFound) {
+        return nil;
+    }
+
+    // Parse the entire string as hex
+    unsigned long long value = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:s];
+    scanner.charactersToBeSkipped = nil;
+    if (![scanner scanHexLongLong:&value] || scanner.scanLocation != s.length) {
+        return nil;
+    }
+
+    // Decompose into ARGB depending on length
+    unsigned long long a, r, g, b;
+    switch (len) {
+        case 3: // #RGB (12-bit)
+            a = 255;
+            r = ((value >> 8) & 0xF) * 17;
+            g = ((value >> 4) & 0xF) * 17;
+            b = ( value        & 0xF) * 17;
+            break;
+        case 4: // #ARGB (16-bit)
+            a = ((value >> 12) & 0xF) * 17;
+            r = ((value >>  8) & 0xF) * 17;
+            g = ((value >>  4) & 0xF) * 17;
+            b = ( value         & 0xF) * 17;
+            break;
+        case 6: // #RRGGBB (24-bit)
+            a = 255;
+            r = (value >> 16) & 0xFF;
+            g = (value >>  8) & 0xFF;
+            b =  value        & 0xFF;
+            break;
+        case 8: // #AARRGGBB (32-bit)
+            a = (value >> 24) & 0xFF;
+            r = (value >> 16) & 0xFF;
+            g = (value >>  8) & 0xFF;
+            b =  value        & 0xFF;
+            break;
+        default:
+            return nil; // unreachable due to guard
+    }
+
+    return [UIColor colorWithRed:(CGFloat)r / 255.0
+                           green:(CGFloat)g / 255.0
+                            blue:(CGFloat)b / 255.0
+                           alpha:(CGFloat)a / 255.0];
+}
+
+// Decode a Base64 image string safely
+- (UIImage *)imageFromBase64String:(NSString *)base64 {
+    if (![base64 isKindOfClass:[NSString class]]) return nil;
+    if (base64.length == 0) return nil;
+
+    // Strip data URL prefix if present
+    NSRange comma = [base64 rangeOfString:@","];
+    NSString *payload = (comma.location != NSNotFound) ? [base64 substringFromIndex:comma.location + 1] : base64;
+
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:payload
+                                                       options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    if (!data) return nil;
+
+    UIImage *image = [UIImage imageWithData:data];
+    return image;
 }
 
 
