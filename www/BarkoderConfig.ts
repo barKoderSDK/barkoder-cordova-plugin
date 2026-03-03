@@ -130,6 +130,7 @@ export class BarkoderConfig {
   pinchToZoomEnabled?: boolean;
   regionOfInterestVisible?: boolean;
   barkoderResolution?: BarkoderResolution;
+  powerSavingMode?: number;
   beepOnSuccessEnabled?: boolean;
   vibrateOnSuccessEnabled?: boolean;
   decoder?: DekoderConfig;

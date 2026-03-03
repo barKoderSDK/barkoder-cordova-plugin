@@ -101,6 +101,7 @@
 - (void)configureFlashButton:(CDVInvokedUrlCommand *)command;
 - (void)configureZoomButton:(CDVInvokedUrlCommand *)command;
 - (void)selectVisibleBarcodes:(CDVInvokedUrlCommand*)command;
+- (void)setPowerSavingMode:(CDVInvokedUrlCommand *)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
 - (void)isCloseSessionOnResultEnabled:(CDVInvokedUrlCommand*)command;
@@ -173,6 +174,7 @@
 - (void)getARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderTextFormat:(CDVInvokedUrlCommand *)command;
+- (void)getPowerSavingMode:(CDVInvokedUrlCommand *)command;
 
 
 // Enum to represent different Barkoder error types
@@ -1391,6 +1393,12 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setPowerSavingMode:(CDVInvokedUrlCommand *)command {
+    int powerSavingMode = [[command.arguments objectAtIndex:0] intValue];
+    [barkoderView.config setPowerSavingMode:powerSavingMode];
+    [self callbackSuccess:command];
+}
+
 
 // MARK: - Getters
 
@@ -1859,6 +1867,10 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccessMessage:command message:[barkoderView.config.arConfig headerTextFormat]];
 }
 
+- (void)getPowerSavingMode:(CDVInvokedUrlCommand *)command {
+  [self callbackSuccessInt:command value:(int)[barkoderView.config powerSavingMode]];
+}
+
 
 //MARK: BarkoderUtil
 
@@ -1896,7 +1908,7 @@ CDVPluginResult* pluginResult = nil;
         
         for (BKImageDescriptor *imageObject in decoderResult.images) {
           if (imageObject.name && imageObject.image) {
-            NSData *imageData = UIImagePNGRepresentation(imageObject.image);
+            NSData *imageData = UIImageJPEGRepresentation(imageObject.image, 0.6);
             if (imageData) {
               NSDictionary *imageInfo = @{
                 @"name": imageObject.name,
@@ -1915,7 +1927,7 @@ CDVPluginResult* pluginResult = nil;
       NSDictionary *extraDict = (NSDictionary *)decoderResult.extra;
       UIImage *sadlImage = [BarkoderHelper sadlImageFromExtra:extraDict];
       if (sadlImage) {
-        NSData *sadlImageData = UIImagePNGRepresentation(sadlImage);
+        NSData *sadlImageData = UIImageJPEGRepresentation(sadlImage, 0.6);
         if (sadlImageData) {
           resultJson[@"sadlImageAsBase64"] = [sadlImageData base64EncodedStringWithOptions:0];
         }
@@ -1949,7 +1961,7 @@ CDVPluginResult* pluginResult = nil;
   if (thumbnails.count > 0) {
     NSMutableArray *thumbnailsBase64Array = [NSMutableArray array];
     for (UIImage *thumbnail in thumbnails) {
-      NSData *thumbnailData = UIImagePNGRepresentation(thumbnail);
+      NSData *thumbnailData = UIImageJPEGRepresentation(thumbnail, 0.6);
       if (thumbnailData) {
         [thumbnailsBase64Array addObject:[thumbnailData base64EncodedStringWithOptions:0]];
       }
@@ -1959,7 +1971,7 @@ CDVPluginResult* pluginResult = nil;
   
   // Add main image if present
   if (image) {
-    NSData *imageData = UIImagePNGRepresentation(image);
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.6);
     if (imageData) {
       barkoderResultJson[@"resultImageAsBase64"] = [imageData base64EncodedStringWithOptions:0];
     }

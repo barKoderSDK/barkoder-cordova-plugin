@@ -427,6 +427,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.selectVisibleBarcodes(callbackContext);
       return true;
     }
+    if (action.equals("setPowerSavingMode")) {
+      this.setPowerSavingMode(args, callbackContext);
+      return true;
+    }
     if (action.equals("isFlashAvailable")) {
       this.isFlashAvailable(callbackContext);
       return true;
@@ -709,6 +713,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("getARHeaderTextFormat")) {
       this.getARHeaderTextFormat(callbackContext);
+      return true;
+    }
+    if (action.equals("getPowerSavingMode")) {
+      this.getPowerSavingMode(callbackContext);
       return true;
     }
     return false;
@@ -1853,6 +1861,16 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     callbackContext.success();
   }
 
+  private void setPowerSavingMode(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int powerSavingMode = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.setPowerSavingMode(powerSavingMode);
+    });
+
+    callbackContext.success();
+  }
+
   // Getters
 
   private void isFlashAvailable(CallbackContext callbackContext) {
@@ -2336,6 +2354,12 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void getARHeaderTextFormat(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(barkoderView.config.getArConfig().getHeaderTextFormat());
+    });
+  }
+
+  private void getPowerSavingMode(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getPowerSavingMode()));
     });
   }
 

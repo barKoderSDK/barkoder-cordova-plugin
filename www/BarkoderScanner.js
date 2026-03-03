@@ -1023,6 +1023,16 @@ exports.selectVisibleBarcodes = function (success, error) {
   exec(success, error, barkoderScanner, "selectVisibleBarcodes", []);
 };
 
+/**
+ * Power saving mode level. Higher values reduce CPU/battery usage by limiting frame processing. 0 = disabled (no constraints).
+ * @param {*} powerSavingMode - The power saving mode level to set.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setPowerSavingMode = function (powerSavingMode, success, error) {
+  exec(success, error, barkoderScanner, "setPowerSavingMode", [powerSavingMode]);
+};
+
 // - Getters
 
 /**
@@ -1666,4 +1676,13 @@ exports.getARHeaderVerticalTextMargin = function (success, error) {
  */
 exports.getARHeaderTextFormat = function (success, error) {
   exec(success, error, barkoderScanner, "getARHeaderTextFormat", []);
+};
+
+/**
+ * Retrieves the power saving mode level.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getPowerSavingMode = function (success, error) {
+  exec(success, error, barkoderScanner, "getPowerSavingMode", []);
 };
