@@ -282,6 +282,16 @@ exports.setBarkoderResolution = function (resolution, success, error) {
 };
 
 /**
+ * Sets the style of the visual marker drawn at the center of the Region of Interest (ROI).
+ * @param {*} roiCenterMark - The ROI center mark style to set
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setRoiCenterMark = function (roiCenterMark, success, error) {
+  exec(success, error, barkoderScanner, "setRoiCenterMark", [roiCenterMark]);
+};
+
+/**
  * Enables or disables the audible beep sound upon successfully decoding a barcode
  * @param {*} enabled - Set to true to enable the beep sound, false to disable it
  * @param {*} success - The callback function to be invoked on successful execution
@@ -547,6 +557,29 @@ exports.setQrMultiPartMergeEnabled = function (enabled, success, error) {
   exec(success, error, barkoderScanner, "setQrMultiPartMergeEnabled", [
     enabled,
   ]);
+};
+
+/**
+ * Defines the string match filter applied to decoded results.
+ * Results expose their match status through `isMatched`.
+ * @param {*} value - The match filter string to set
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setMatchFilter = function (value, success, error) {
+  exec(success, error, barkoderScanner, "setMatchFilter", [value]);
+};
+
+/**
+ * Controls whether only results matching `matchFilter` are returned.
+ * If `false`, all decoded results are returned, including unmatched results.
+ * This option only applies when a match filter is active.
+ * @param {*} enabled - Set to true to return only matched results, false to return all
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.setReturnOnlyMatchedResults = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setReturnOnlyMatchedResults", [enabled]);
 };
 
 /**
@@ -954,6 +987,30 @@ exports.setARHeaderTextFormat = function (value, success, error) {
 };
 
 /**
+ * When AR mode is `matchFilter`, controls whether only matched results are returned.
+ * If `false`, all detected results are returned, while unmatched results remain marked through `isMatched`.
+ * This option only applies when `arMode == matchFilter` and a match filter is active.
+ * @param {*} enabled - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARReturnOnlyMatchedResults = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setARReturnOnlyMatchedResults", [enabled]);
+};
+
+/**
+ * When AR mode is `matchFilter`, controls whether only matched results are displayed.
+ * If `false`, all decoded results are displayed, including unmatched results.
+ * This option only applies when `arMode == matchFilter` and a match filter is active.
+ * @param {*} enabled - Boolean toggle.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.setARDisplayOnlyMatchedResults = function (enabled, success, error) {
+  exec(success, error, barkoderScanner, "setARDisplayOnlyMatchedResults", [enabled]);
+};
+
+/**
  * Configures the close button
  * @param {*} visible - Show the button while scanning.
  * @param {*} positionX - X position in points.
@@ -1021,6 +1078,15 @@ exports.configureZoomButton = function (visible, positionX, positionY, iconSize,
  */
 exports.selectVisibleBarcodes = function (success, error) {
   exec(success, error, barkoderScanner, "selectVisibleBarcodes", []);
+};
+
+/**
+ * Clears the current AR result cache and removes all rendered AR barcode overlays without stopping the camera, ending the scanning session, or emitting results.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.resetARCache = function (success, error) {
+  exec(success, error, barkoderScanner, "resetARCache", []);
 };
 
 /**
@@ -1364,12 +1430,39 @@ exports.isVINRestrictionsEnabled = function (success, error) {
 };
 
 /**
+ * Retrieves the string match filter applied to decoded results.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getMatchFilter = function (success, error) {
+  exec(success, error, barkoderScanner, "getMatchFilter", []);
+};
+
+/**
+ * Retrieves whether only results matching `matchFilter` are returned.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getReturnOnlyMatchedResults = function (success, error) {
+  exec(success, error, barkoderScanner, "getReturnOnlyMatchedResults", []);
+};
+
+/**
  * Retrieves the resolution for barcode scanning
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
 exports.getBarkoderResolution = function (success, error) {
   exec(success, error, barkoderScanner, "getBarkoderResolution", []);
+};
+
+/**
+ * Retrieves the style of the visual marker drawn at the center of the Region of Interest (ROI).
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getRoiCenterMark = function (success, error) {
+  exec(success, error, barkoderScanner, "getRoiCenterMark", []);
 };
 
 /**
@@ -1679,10 +1772,37 @@ exports.getARHeaderTextFormat = function (success, error) {
 };
 
 /**
+ * Retrieves whether only matched results are returned in AR match filter mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARReturnOnlyMatchedResults = function (success, error) {
+  exec(success, error, barkoderScanner, "getARReturnOnlyMatchedResults", []);
+};
+
+/**
+ * Retrieves whether only matched results are displayed in AR match filter mode.
+ * @param {*} success
+ * @param {*} error
+ */
+exports.getARDisplayOnlyMatchedResults = function (success, error) {
+  exec(success, error, barkoderScanner, "getARDisplayOnlyMatchedResults", []);
+};
+
+/**
  * Retrieves the power saving mode level.
  * @param {*} success - The callback function to be invoked on successful execution
  * @param {*} error - The callback function to be invoked on execution error
  */
 exports.getPowerSavingMode = function (success, error) {
   exec(success, error, barkoderScanner, "getPowerSavingMode", []);
+};
+
+/**
+ * Retrieves the Device ID.
+ * @param {*} success - The callback function to be invoked on successful execution
+ * @param {*} error - The callback function to be invoked on execution error
+ */
+exports.getDeviceId = function (success, error) {
+  exec(success, error, barkoderScanner, "getDeviceId", []);
 };

@@ -33,6 +33,7 @@ import com.barkoder.enums.BarkoderARLocationType;
 import com.barkoder.enums.BarkoderARMode;
 import com.barkoder.enums.BarkoderCameraPosition;
 import com.barkoder.enums.BarkoderResolution;
+import com.barkoder.enums.BarkoderRoiCenterMark;
 import com.barkoder.interfaces.BarkoderResultCallback;
 import com.barkoder.overlaymanager.BarkoderAROverlayRefresh;
 
@@ -159,6 +160,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setBarkoderResolution(args, callbackContext);
       return true;
     }
+    if (action.equals("setRoiCenterMark")) {
+      this.setRoiCenterMark(args, callbackContext);
+      return true;
+    }
     if (action.equals("setBeepOnSuccessEnabled")) {
       this.setBeepOnSuccessEnabled(args, callbackContext);
       return true;
@@ -249,6 +254,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("setQrMultiPartMergeEnabled")) {
       this.setQrMultiPartMergeEnabled(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setMatchFilter")) {
+      this.setMatchFilter(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setReturnOnlyMatchedResults")) {
+      this.setReturnOnlyMatchedResults(args, callbackContext);
       return true;
     }
     if (action.equals("configureBarkoder")) {
@@ -411,6 +424,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.setARHeaderTextFormat(args, callbackContext);
       return true;
     }
+    if (action.equals("setARReturnOnlyMatchedResults")) {
+      this.setARReturnOnlyMatchedResults(args, callbackContext);
+      return true;
+    }
+    if (action.equals("setARDisplayOnlyMatchedResults")) {
+      this.setARDisplayOnlyMatchedResults(args, callbackContext);
+      return true;
+    }
     if (action.equals("configureCloseButton")) {
       this.configureCloseButton(args, callbackContext);
       return true;
@@ -425,6 +446,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     }
     if (action.equals("selectVisibleBarcodes")) {
       this.selectVisibleBarcodes(callbackContext);
+      return true;
+    }
+    if (action.equals("resetARCache")) {
+      this.resetARCache(callbackContext);
       return true;
     }
     if (action.equals("setPowerSavingMode")) {
@@ -579,6 +604,10 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.getBarkoderResolution(callbackContext);
       return true;
     }
+    if (action.equals("getRoiCenterMark")) {
+      this.getRoiCenterMark(callbackContext);
+      return true;
+    }
     if (action.equals("isDatamatrixDpmModeEnabled")) {
       this.isDatamatrixDpmModeEnabled(callbackContext);
       return true;
@@ -715,8 +744,28 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       this.getARHeaderTextFormat(callbackContext);
       return true;
     }
+    if (action.equals("getARReturnOnlyMatchedResults")) {
+      this.getARReturnOnlyMatchedResults(callbackContext);
+      return true;
+    }
+    if (action.equals("getARDisplayOnlyMatchedResults")) {
+      this.getARDisplayOnlyMatchedResults(callbackContext);
+      return true;
+    }
     if (action.equals("getPowerSavingMode")) {
       this.getPowerSavingMode(callbackContext);
+      return true;
+    }
+    if (action.equals("getDeviceId")) {
+      this.getDeviceId(callbackContext);
+      return true;
+    }
+    if (action.equals("getMatchFilter")) {
+      this.getMatchFilter(callbackContext);
+      return true;
+    }
+    if (action.equals("getReturnOnlyMatchedResults")) {
+      this.getReturnOnlyMatchedResults(callbackContext);
       return true;
     }
     return false;
@@ -1028,6 +1077,17 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
       } catch (IllegalArgumentException ex) {
         callbackContext.error(BarkoderErrors.INVALID_RESOLUTION + "Error: " + ex.getMessage());
       }
+    });
+  }
+
+  private void setRoiCenterMark(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    int roiCenterMarkIndex = args.getInt(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+        BarkoderRoiCenterMark roiCenterMark = BarkoderRoiCenterMark.values()[roiCenterMarkIndex];
+        barkoderView.config.setRoiCenterMark(roiCenterMark);
+
+        callbackContext.success();
     });
   }
 
@@ -1744,6 +1804,24 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void setARReturnOnlyMatchedResults(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setReturnOnlyMatchedResults(value);
+      callbackContext.success();
+    });
+  }
+
+  private void setARDisplayOnlyMatchedResults(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getArConfig().setDisplayOnlyMatchedResults(value);
+      callbackContext.success();
+    });
+  }
+
   private void configureCloseButton(JSONArray args, CallbackContext callbackContext) throws JSONException {
     final boolean visible = args.getBoolean(0);
     final float positionX = (float) args.getDouble(1);
@@ -1856,6 +1934,14 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
   private void selectVisibleBarcodes(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       barkoderView.selectVisibleBarcodes();
+    });
+
+    callbackContext.success();
+  }
+
+  private void resetARCache(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.resetArCache();
     });
 
     callbackContext.success();
@@ -2148,6 +2234,12 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void getRoiCenterMark(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getRoiCenterMark().ordinal());
+    });
+  }
+
   private void isDatamatrixDpmModeEnabled(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().Datamatrix.dpmMode));
@@ -2357,9 +2449,59 @@ public class BarkoderScanner extends CordovaPlugin implements BarkoderResultCall
     });
   }
 
+  private void getARReturnOnlyMatchedResults(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getReturnOnlyMatchedResults()));
+    });
+  }
+
+  private void getARDisplayOnlyMatchedResults(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getArConfig().getDisplayOnlyMatchedResults()));
+    });
+  }
+
   private void getPowerSavingMode(CallbackContext callbackContext) {
     this.cordova.getActivity().runOnUiThread(() -> {
       callbackContext.success(String.valueOf(barkoderView.config.getPowerSavingMode()));
+    });
+  }
+
+  private void getDeviceId(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(Barkoder.GetDeviceId());
+    });
+  }
+
+  private void setMatchFilter(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    String value = args.getString(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getDecoderConfig().matchFilter = value;
+    });
+
+    callbackContext.success();
+  }
+
+  private void getMatchFilter(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(barkoderView.config.getDecoderConfig().matchFilter);
+    });
+  }
+
+  private void setReturnOnlyMatchedResults(JSONArray args, CallbackContext callbackContext) throws JSONException {
+    boolean value = args.getBoolean(0);
+
+    this.cordova.getActivity().runOnUiThread(() -> {
+      barkoderView.config.getDecoderConfig().returnOnlyMatchedResults = value;
+    });
+
+    callbackContext.success();
+  }
+
+  private void getReturnOnlyMatchedResults(CallbackContext callbackContext) {
+    this.cordova.getActivity().runOnUiThread(() -> {
+      callbackContext.success(String.valueOf(barkoderView.config.getDecoderConfig().returnOnlyMatchedResults));
     });
   }
 

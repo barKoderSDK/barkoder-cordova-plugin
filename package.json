@@ -1,6 +1,6 @@
 {
   "name": "barkoder-cordova",
-  "version": "1.6.8",
+  "version": "1.7.1",
   "description": "Cordova plugin that connects to barkoderSDK which helps users scan barcodes with mobile devices",
   "cordova": {
     "id": "barkoder-cordova-plugin",
@@ -27,6 +27,10 @@
   },
   "author": "Barkoder",
   "license": "ISC",
+  "repository": {
+  "type": "git",
+  "url": "git+https://github.com/barKoderSDK/barkoder-cordova-plugin.git"
+  },
   "bugs": {
     "url": "https://barkoder.com/issues"
   },

@@ -10,7 +10,8 @@ export enum FormattingType {
   automatic,
   gs1,
   aamva,
-  sadl
+  sadl,
+  bcbp
 }
 
 export enum MsiChecksumType {
@@ -43,6 +44,12 @@ export enum BarkoderResolution {
   HD,
   FHD,
   UHD,
+}
+
+export enum BarkoderRoiCenterMark {
+  none,
+  crosshair,
+  point,
 }
 
 export enum BarcodeType {
@@ -93,7 +100,8 @@ export enum BarkoderARMode {
   off,
   interactiveDisabled,
   interactiveEnabled,
-  nonInteractive
+  nonInteractive,
+  matchFilter
 }
   
 export enum BarkoderAROverlayRefresh {
@@ -125,11 +133,13 @@ export class BarkoderConfig {
   scanningIndicatorAlwaysVisible?: boolean;
   closeSessionOnResultEnabled?: boolean;
   imageResultEnabled?: boolean;
+  barcodeThumbnailOnResult?: boolean;
   locationInImageResultEnabled?: boolean;
   locationInPreviewEnabled?: boolean;
   pinchToZoomEnabled?: boolean;
   regionOfInterestVisible?: boolean;
   barkoderResolution?: BarkoderResolution;
+  roiCenterMark?: BarkoderRoiCenterMark;
   powerSavingMode?: number;
   beepOnSuccessEnabled?: boolean;
   vibrateOnSuccessEnabled?: boolean;
@@ -216,6 +226,8 @@ export class BarkoderARConfig {
   headerHorizontalTextMargin?: number;
   headerVerticalTextMargin?: number;
   headerTextFormat?: string;
+  returnOnlyMatchedResults?: boolean;
+  displayOnlyMatchedResults?: boolean;
   
   constructor(config: Partial<BarkoderARConfig>) {
     Object.assign(this, config);
@@ -354,6 +366,8 @@ export class GeneralSettings {
   multicodeCachingEnabled?: boolean;
   upcEanDeblur?: number;
   enableMisshaped1D?: number;
+  matchFilter?: string;
+  returnOnlyMatchedResults?: boolean;
 
   constructor(config: Partial<GeneralSettings>) {
     Object.assign(this, config);
@@ -404,6 +418,7 @@ export class DecoderResult {
   mrzImagesAsBase64?: { name: string; base64: string }[];
   sadlImageAsBase64?: string | null;
   locationPoints?: { x: number; y: number }[];
+  isMatched: boolean;
 
   constructor(resultMap: Record<string, any>) {
     this.barcodeType = resultMap["barcodeType"];
@@ -412,6 +427,7 @@ export class DecoderResult {
     this.textualData = resultMap["textualData"];
     this.characterSet = resultMap["characterSet"] || null;
     this.extra = "extra" in resultMap ? JSON.parse(resultMap["extra"]) : null;
+    this.isMatched = resultMap["isMatched"];
     this.mrzImagesAsBase64 = Array.isArray(resultMap["mrzImagesAsBase64"])
       ? resultMap["mrzImagesAsBase64"].map(
           (image: { name: string; base64: string }) => ({

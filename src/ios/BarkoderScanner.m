@@ -34,6 +34,7 @@
 - (void)setPinchToZoomEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setRegionOfInterestVisible:(CDVInvokedUrlCommand*)command;
 - (void)setBarkoderResolution:(CDVInvokedUrlCommand*)command;
+- (void)setRoiCenterMark:(CDVInvokedUrlCommand*)command;
 - (void)setBeepOnSuccessEnabled:(CDVInvokedUrlCommand*)command;
 - (void)setVibrateOnSuccessEnabled:(CDVInvokedUrlCommand*)command;
 - (void)showLogMessages:(CDVInvokedUrlCommand*)command;
@@ -97,10 +98,13 @@
 - (void)setARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)setARHeaderTextFormat:(CDVInvokedUrlCommand *)command;
+- (void)setARReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command;
+- (void)setARDisplayOnlyMatchedResults:(CDVInvokedUrlCommand *)command;
 - (void)configureCloseButton:(CDVInvokedUrlCommand *)command;
 - (void)configureFlashButton:(CDVInvokedUrlCommand *)command;
 - (void)configureZoomButton:(CDVInvokedUrlCommand *)command;
 - (void)selectVisibleBarcodes:(CDVInvokedUrlCommand*)command;
+- (void)resetARCache:(CDVInvokedUrlCommand*)command;
 - (void)setPowerSavingMode:(CDVInvokedUrlCommand *)command;
 
 - (void)isFlashAvailable:(CDVInvokedUrlCommand*)command;
@@ -140,6 +144,7 @@
 - (void)getThresholdBetweenDuplicatesScans:(CDVInvokedUrlCommand*)command;
 - (void)isVINRestrictionsEnabled:(CDVInvokedUrlCommand*)command;
 - (void)getBarkoderResolution:(CDVInvokedUrlCommand*)command;
+- (void)getRoiCenterMark:(CDVInvokedUrlCommand*)command;
 - (void)isDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isQrDpmModeEnabled:(CDVInvokedUrlCommand*)command;
 - (void)isQrMicroDpmModeEnabled:(CDVInvokedUrlCommand*)command;
@@ -174,7 +179,14 @@
 - (void)getARHeaderHorizontalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderVerticalTextMargin:(CDVInvokedUrlCommand *)command;
 - (void)getARHeaderTextFormat:(CDVInvokedUrlCommand *)command;
+- (void)getARReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command;
+- (void)getARDisplayOnlyMatchedResults:(CDVInvokedUrlCommand *)command;
 - (void)getPowerSavingMode:(CDVInvokedUrlCommand *)command;
+- (void)getDeviceId:(CDVInvokedUrlCommand *)command;
+- (void)setMatchFilter:(CDVInvokedUrlCommand *)command;
+- (void)getMatchFilter:(CDVInvokedUrlCommand *)command;
+- (void)setReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command;
+- (void)getReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command;
 
 
 // Enum to represent different Barkoder error types
@@ -228,6 +240,7 @@ CDVPluginResult* pluginResult = nil;
       if (!strongSelf) { return; }
       
       barkoderView = [[BarkoderView alloc] initWithFrame:frame];
+      [barkoderView setUserInteractionEnabled:NO];
       [strongSelf createBarkoderConfig];
       [strongSelf.webView.superview addSubview:barkoderView];
       
@@ -326,6 +339,7 @@ CDVPluginResult* pluginResult = nil;
       NSError *error = nil;
       resultCallbackId = command.callbackId;
       [barkoderView startScanning:strongSelf error:&error];
+      [barkoderView setUserInteractionEnabled:YES];
     });
   }];
 }
@@ -338,6 +352,7 @@ CDVPluginResult* pluginResult = nil;
     
     dispatch_async(dispatch_get_main_queue(), ^{
       [barkoderView stopScanning];
+      [barkoderView setUserInteractionEnabled:NO];
       [strongSelf callbackSuccess:command];
     });
   }];
@@ -530,6 +545,18 @@ CDVPluginResult* pluginResult = nil;
     }
 }
 
+- (void)setRoiCenterMark:(CDVInvokedUrlCommand *)command {
+    int index = [[command.arguments objectAtIndex:0] intValue];
+    
+    BarkoderRoiCenterMark roiCenterMark = (BarkoderRoiCenterMark) index;
+    
+    if (roiCenterMark == BarkoderRoiCenterMarkNone || roiCenterMark == BarkoderRoiCenterMarkCrosshair || roiCenterMark == BarkoderRoiCenterMarkPoint) { // none = 0, crosshair = 1, point = 2
+        [barkoderView.config setRoiCenterMark:roiCenterMark];
+        
+        [self callbackSuccess:command];
+    }
+}
+
 - (void)setBeepOnSuccessEnabled:(CDVInvokedUrlCommand *)command {
     BOOL enabled = [[command.arguments objectAtIndex:0] boolValue];
     
@@ -606,7 +633,7 @@ CDVPluginResult* pluginResult = nil;
     
     Formatting formatting = (Formatting) index;
     
-  if (formatting == Disabled || formatting == Automatic || formatting == GS1 || formatting == AAMVA || formatting == SADL) { // Disabled = 0, Automatic = 1, GS1 = 2, AAMVA = 3, SADL = 4
+  if (formatting == Disabled || formatting == Automatic || formatting == GS1 || formatting == AAMVA || formatting == SADL || formatting == BCBP) { // Disabled = 0, Automatic = 1, GS1 = 2, AAMVA = 3, SADL = 4, BCBP = 5
         barkoderView.config.decoderConfig.formatting = formatting;
         
         [self callbackSuccess:command];
@@ -1109,7 +1136,7 @@ CDVPluginResult* pluginResult = nil;
 - (void)setARMode:(CDVInvokedUrlCommand *)command {
     int value = [[command.arguments objectAtIndex:0] intValue];
     
-    if (value < BarkoderARModeOff || value > BarkoderARModeNonInteractive) {
+    if (value < BarkoderARModeOff || value > BarkoderARModeMatchFilter) {
         return;
     }
     
@@ -1270,6 +1297,18 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccess:command];
 }
 
+- (void)setARReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command {
+    BOOL value = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.returnOnlyMatchedResults = value;
+    [self callbackSuccess:command];
+}
+
+- (void)setARDisplayOnlyMatchedResults:(CDVInvokedUrlCommand *)command {
+    BOOL value = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.arConfig.displayOnlyMatchedResults = value;
+    [self callbackSuccess:command];
+}
+
 - (void)configureCloseButton:(CDVInvokedUrlCommand*)command {
   BOOL visible = [[command.arguments objectAtIndex:0] boolValue];
   CGFloat positionX = (CGFloat)[[command.arguments objectAtIndex:1] doubleValue];
@@ -1389,6 +1428,12 @@ CDVPluginResult* pluginResult = nil;
 
 - (void)selectVisibleBarcodes:(CDVInvokedUrlCommand*)command {
     [barkoderView selectVisibleBarcodes];
+    
+    [self callbackSuccess:command];
+}
+
+- (void)resetARCache:(CDVInvokedUrlCommand*)command {
+    [barkoderView resetARCache];
     
     [self callbackSuccess:command];
 }
@@ -1727,6 +1772,10 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccessInt:command value:(int)[barkoderView.config barkoderResolution]];
 }
 
+- (void)getRoiCenterMark:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessInt:command value:(int)[barkoderView.config roiCenterMark]];
+}
+
 - (void)isDatamatrixDpmModeEnabled:(CDVInvokedUrlCommand *)command {
     BOOL isEnabled = (barkoderView.config.decoderConfig.datamatrix.dpmMode != 0);
     [self callbackSuccessBoolean:command boolean:isEnabled];
@@ -1867,10 +1916,41 @@ CDVPluginResult* pluginResult = nil;
     [self callbackSuccessMessage:command message:[barkoderView.config.arConfig headerTextFormat]];
 }
 
+- (void)getARReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig returnOnlyMatchedResults]];
+}
+
+- (void)getARDisplayOnlyMatchedResults:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:[barkoderView.config.arConfig displayOnlyMatchedResults]];
+}
+
 - (void)getPowerSavingMode:(CDVInvokedUrlCommand *)command {
   [self callbackSuccessInt:command value:(int)[barkoderView.config powerSavingMode]];
 }
 
+- (void)getDeviceId:(CDVInvokedUrlCommand *)command {
+  [self callbackSuccessMessage:command message:[barkoderView.config.decoderConfig getDeviceId]];
+}
+
+- (void)setMatchFilter:(CDVInvokedUrlCommand *)command {
+    NSString *value = [command.arguments objectAtIndex:0];
+    barkoderView.config.decoderConfig.matchFilter = value;
+    [self callbackSuccess:command];
+}
+
+- (void)getMatchFilter:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessMessage:command message:barkoderView.config.decoderConfig.matchFilter];
+}
+
+- (void)setReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command {
+    BOOL value = [[command.arguments objectAtIndex:0] boolValue];
+    barkoderView.config.decoderConfig.returnOnlyMatchedResults = value;
+    [self callbackSuccess:command];
+}
+
+- (void)getReturnOnlyMatchedResults:(CDVInvokedUrlCommand *)command {
+    [self callbackSuccessBoolean:command boolean:barkoderView.config.decoderConfig.returnOnlyMatchedResults];
+}
 
 //MARK: BarkoderUtil
 
@@ -1888,6 +1968,7 @@ CDVPluginResult* pluginResult = nil;
     resultJson[@"binaryDataAsBase64"] = [decoderResult.binaryData base64EncodedStringWithOptions:0];
     resultJson[@"textualData"] = decoderResult.textualData ?: [NSNull null];
     resultJson[@"characterSet"] = decoderResult.characterSet ?: [NSNull null];
+    resultJson[@"isMatched"] = @(decoderResult.isMatched);
     
     if ([decoderResult.extra isKindOfClass:[NSDictionary class]]) {
       NSDictionary *extraAsDictionary = (NSDictionary *)decoderResult.extra;
@@ -1948,7 +2029,6 @@ CDVPluginResult* pluginResult = nil;
 
         resultJson[@"locationPoints"] = pointsJson;
     }
-
     
     [resultsJsonArray addObject:resultJson];
   }
